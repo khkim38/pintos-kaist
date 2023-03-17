@@ -150,4 +150,7 @@ void do_iret (struct intr_frame *tf);
 void thread_sleep(int64_t ticks);
 void thread_awake(int64_t ticks);
 
+/* project1 priority */
+bool compare_priority(struct list_elem *a, struct list_elem *b);
+
 #endif /* threads/thread.h */
