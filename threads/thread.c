@@ -27,6 +27,8 @@
 /* List of processes in THREAD_READY state, that is, processes
    that are ready to run but not actually running. */
 static struct list ready_list;
+/* project 1 alarm clock */
+static struct list sleep_list;
 
 /* Idle thread. */
 static struct thread *idle_thread;
@@ -107,7 +109,9 @@ thread_init (void) {
 
 	/* Init the globla thread context */
 	lock_init (&tid_lock);
+	/* project1 alarm clock */
 	list_init (&ready_list);
+	list_init (&sleep_list);
 	list_init (&destruction_req);
 
 	/* Set up a thread structure for the running thread. */
@@ -207,6 +211,10 @@ thread_create (const char *name, int priority,
 	/* Add to run queue. */
 	thread_unblock (t);
 
+	/* project1 priority */
+	if (thread_current()->priority < t->priority)
+		thread_yield();
+
 	return tid;
 }
 
@@ -240,7 +248,9 @@ thread_unblock (struct thread *t) {
 
 	old_level = intr_disable ();
 	ASSERT (t->status == THREAD_BLOCKED);
-	list_push_back (&ready_list, &t->elem);
+	/* project1 priority */
+	// list_push_back (&ready_list, &t->elem);
+	list_insert_ordered (&ready_list, &t->elem, &compare_priority, NULL);
 	t->status = THREAD_READY;
 	intr_set_level (old_level);
 }
@@ -302,8 +312,11 @@ thread_yield (void) {
 	ASSERT (!intr_context ());
 
 	old_level = intr_disable ();
-	if (curr != idle_thread)
-		list_push_back (&ready_list, &curr->elem);
+	/* project1 priority */
+	if (curr != idle_thread){
+		// list_push_back (&ready_list, &curr->elem);
+		list_insert_ordered (&ready_list, &curr->elem, &compare_priority, NULL);
+	}
 	do_schedule (THREAD_READY);
 	intr_set_level (old_level);
 }
@@ -312,6 +325,10 @@ thread_yield (void) {
 void
 thread_set_priority (int new_priority) {
 	thread_current ()->priority = new_priority;
+	/* project1 priority */
+	if (list_empty(&ready_list)) return;
+	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
+		thread_yield();
 }
 
 /* Returns the current thread's priority. */
@@ -587,4 +604,42 @@ allocate_tid (void) {
 	lock_release (&tid_lock);
 
 	return tid;
+}
+
+/* project1 alarm clock */
+void thread_sleep(int64_t ticks){
+	enum intr_level old_level;
+	old_level = intr_disable ();
+	
+	struct thread *curr = thread_current();
+	curr->awake_time = ticks;
+	list_push_back(&sleep_list, &curr->elem);
+	thread_block();
+	intr_set_level (old_level);
+}
+
+void thread_awake(int64_t ticks){
+	enum intr_level old_level;
+	old_level = intr_disable ();
+	
+	struct thread *t;
+	struct list_elem *e;
+
+	for (e = list_begin(&sleep_list); e != list_end(&sleep_list);){
+		t = list_entry(e, struct thread, elem);
+		if (t->awake_time <= ticks){
+			e = list_remove(e);
+			thread_unblock(t);
+		}
+		else {
+			e = list_next(e);
+		}
+	}
+
+	intr_set_level (old_level);
+}
+
+/* project1 priority */
+bool compare_priority(struct list_elem *a, struct list_elem *b){
+	return list_entry(a, struct thread, elem)->priority > list_entry(b, struct thread, elem)->priority;
 }
