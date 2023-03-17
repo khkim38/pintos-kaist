@@ -152,5 +152,5 @@ void thread_awake(int64_t ticks);
 
 /* project1 priority */
 bool compare_priority(struct list_elem *a, struct list_elem *b);
-
+void compare_priority_current();
 #endif /* threads/thread.h */

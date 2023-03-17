@@ -643,3 +643,9 @@ void thread_awake(int64_t ticks){
 bool compare_priority(struct list_elem *a, struct list_elem *b){
 	return list_entry(a, struct thread, elem)->priority > list_entry(b, struct thread, elem)->priority;
 }
+
+void compare_priority_current(){
+	if (list_empty(&ready_list)) return;
+	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
+		thread_yield();
+}
