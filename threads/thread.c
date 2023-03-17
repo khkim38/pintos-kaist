@@ -208,6 +208,11 @@ thread_create (const char *name, int priority,
 	t->tf.cs = SEL_KCSEG;
 	t->tf.eflags = FLAG_IF;
 
+	/* project1 donation */
+	t->original_priority = t->priority;
+	t->lock_holder = NULL;
+	list_init(&t->donation_list);
+
 	/* Add to run queue. */
 	thread_unblock (t);
 
@@ -325,6 +330,10 @@ thread_yield (void) {
 void
 thread_set_priority (int new_priority) {
 	thread_current ()->priority = new_priority;
+
+	/* project1 donation */
+	thread_current ()->original_priority = new_priority;
+
 	/* project1 priority */
 	if (list_empty(&ready_list)) return;
 	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
@@ -644,6 +653,7 @@ bool compare_priority(struct list_elem *a, struct list_elem *b){
 	return list_entry(a, struct thread, elem)->priority > list_entry(b, struct thread, elem)->priority;
 }
 
+/* project1 semaphore */
 void compare_priority_current(){
 	if (list_empty(&ready_list)) return;
 	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)

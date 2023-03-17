@@ -98,6 +98,12 @@ struct thread {
 	/* project1 alarm clock */
 	int64_t awake_time;
 
+	/* project1 donation */
+	int original_priority;
+	struct list donation_list;
+	struct list_elem donation_elem;
+	struct lock *lock_holder;
+
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
 	uint64_t *pml4;                     /* Page map level 4 */
@@ -152,5 +158,6 @@ void thread_awake(int64_t ticks);
 
 /* project1 priority */
 bool compare_priority(struct list_elem *a, struct list_elem *b);
+/* project1 semaphore */
 void compare_priority_current();
 #endif /* threads/thread.h */
