@@ -27,7 +27,7 @@
 /* List of processes in THREAD_READY state, that is, processes
    that are ready to run but not actually running. */
 static struct list ready_list;
-/* project 1 alarm clock */
+/* project1 alarm clock */
 static struct list sleep_list;
 
 /* Idle thread. */
@@ -208,11 +208,6 @@ thread_create (const char *name, int priority,
 	t->tf.cs = SEL_KCSEG;
 	t->tf.eflags = FLAG_IF;
 
-	/* project1 donation */
-	t->original_priority = t->priority;
-	t->lock_holder = NULL;
-	list_init(&t->donation_list);
-
 	/* Add to run queue. */
 	thread_unblock (t);
 
@@ -334,6 +329,18 @@ thread_set_priority (int new_priority) {
 	/* project1 donation */
 	thread_current ()->original_priority = new_priority;
 
+	struct thread *curr = thread_current();
+	struct thread *temp;
+	struct list_elem *e;
+	int highest_prioirty = -100;
+	if (!list_empty(&curr->donation_list)){
+		for (e = list_begin(&curr->donation_list); e != list_end(&curr->donation_list); e = list_next(e)){
+			temp = list_entry(e, struct thread, donation_elem);
+			if (temp->priority > highest_prioirty) highest_prioirty = temp->priority;
+		}
+		curr->priority = highest_prioirty;
+	}
+
 	/* project1 priority */
 	if (list_empty(&ready_list)) return;
 	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
@@ -435,6 +442,11 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
 	t->priority = priority;
 	t->magic = THREAD_MAGIC;
+
+	/* project1 donation */
+	t->original_priority=priority;
+	t->lock=NULL;
+	list_init(&t->donation_list);
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should

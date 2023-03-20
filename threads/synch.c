@@ -190,10 +190,11 @@ lock_init (struct lock *lock) {
    interrupt handler.  This function may be called with
    interrupts disabled, but interrupts will be turned back on if
    we need to sleep. */
+
 /* project1 donation */
-// bool compare_donation_priority(struct list_elem *a, struct list_elem *b){
-// 	return list_entry(a, struct thread, donation_elem)->priority > list_entry(b, struct thread, donation_elem)->priority;
-// }
+bool compare_donation_priority(struct list_elem *a, struct list_elem *b){
+	return list_entry(a, struct thread, donation_elem)->priority > list_entry(b, struct thread, donation_elem)->priority;
+}
 
 void
 lock_acquire (struct lock *lock) {
@@ -201,8 +202,22 @@ lock_acquire (struct lock *lock) {
 	ASSERT (!intr_context ());
 	ASSERT (!lock_held_by_current_thread (lock));
 	
+	/* project1 donation*/
+	struct thread *curr = thread_current();
+	struct thread *temp;
+	if (lock->holder != NULL){
+		curr->lock = lock;
+		list_insert_ordered(&lock->holder->donation_list, &curr->donation_elem, &compare_donation_priority, NULL);
+		while (curr->lock != NULL){
+			temp = curr->lock->holder;
+			temp->priority = curr->priority;
+			curr = temp;
+		}
+	}
 
 	sema_down (&lock->semaphore);
+	/* project1 donation*/
+	thread_current()->lock = NULL;
 	lock->holder = thread_current ();
 }
 
@@ -235,6 +250,34 @@ void
 lock_release (struct lock *lock) {
 	ASSERT (lock != NULL);
 	ASSERT (lock_held_by_current_thread (lock));
+
+	/* project1 donation*/
+	struct thread *curr = thread_current();
+	struct thread *temp;
+	struct list_elem *e;
+	int highest_prioirty = -100;
+	if (!list_empty(&curr->donation_list)){
+		for (e = list_begin(&curr->donation_list); e != list_end(&curr->donation_list);){
+			temp = list_entry (e, struct thread, donation_elem);
+			if (temp->lock == lock){
+				e = list_remove(e);
+			}
+			else {
+				e = list_next(e);
+			}
+		}
+	}
+
+	if (list_empty(&curr->donation_list)){
+		curr->priority = curr->original_priority;
+	}
+	else{
+		for (e = list_begin(&curr->donation_list); e != list_end(&curr->donation_list); e = list_next(e)){
+			temp = list_entry (e, struct thread, donation_elem);
+			if (temp->priority>highest_prioirty) highest_prioirty = temp->priority;
+		}
+		curr->priority = highest_prioirty;
+	}
 
 	lock->holder = NULL;
 	sema_up (&lock->semaphore);

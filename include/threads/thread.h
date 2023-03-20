@@ -102,7 +102,7 @@ struct thread {
 	int original_priority;
 	struct list donation_list;
 	struct list_elem donation_elem;
-	struct lock *lock_holder;
+	struct lock *lock;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
