@@ -100,8 +100,11 @@ struct thread {
 
 	/* project1 donation */
 	int original_priority;
+	/* 나한테 donation을 해준 쓰레드들 */
 	struct list donation_list;
+	/* donation_list를 돌아다니기 위한 element, 그냥 elem 못 쓰는 이유는 쟤는 ready랑 sleep 왔다갔다 해야되서 이미 바쁜 놈*/
 	struct list_elem donation_elem;
+	/* 요청한 lock */
 	struct lock *lock;
 
 #ifdef USERPROG

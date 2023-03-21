@@ -191,11 +191,6 @@ lock_init (struct lock *lock) {
    interrupts disabled, but interrupts will be turned back on if
    we need to sleep. */
 
-/* project1 donation */
-bool compare_donation_priority(struct list_elem *a, struct list_elem *b){
-	return list_entry(a, struct thread, donation_elem)->priority > list_entry(b, struct thread, donation_elem)->priority;
-}
-
 void
 lock_acquire (struct lock *lock) {
 	ASSERT (lock != NULL);
@@ -206,17 +201,21 @@ lock_acquire (struct lock *lock) {
 	struct thread *curr = thread_current();
 	struct thread *temp;
 	if (lock->holder != NULL){
+		/* current 쓰레드에, 지가 요청한 lock을 기록 */
 		curr->lock = lock;
-		list_insert_ordered(&lock->holder->donation_list, &curr->donation_elem, &compare_donation_priority, NULL);
+		list_push_back(&lock->holder->donation_list, &curr->donation_elem);
+		/* nested donation 한 형식 */
+		/* current는 선배가 내리갈굼으로 계속 priority donate하는데 이 상황에서 마지막인 후배 즉 lock을 요청 조차 못한 쓰레드*/
 		while (curr->lock != NULL){
 			temp = curr->lock->holder;
 			temp->priority = curr->priority;
 			curr = temp;
 		}
 	}
-
+	/* 나한테 허락된 깃발이 올때까지 기다리는 함수 */
 	sema_down (&lock->semaphore);
 	/* project1 donation*/
+	/* 즉 요청한 lock을 받았으면, 요청 했던 기록 자체를 그냥 없애자 */
 	thread_current()->lock = NULL;
 	lock->holder = thread_current ();
 }
@@ -257,20 +256,24 @@ lock_release (struct lock *lock) {
 	struct list_elem *e;
 	int highest_prioirty = -100;
 	if (!list_empty(&curr->donation_list)){
+		/* lock을 요청한 선배들 즉 doantion list 쭉 돈다 */
 		for (e = list_begin(&curr->donation_list); e != list_end(&curr->donation_list);){
 			temp = list_entry (e, struct thread, donation_elem);
+			/* 여기선 temp가 선배인데, 선배가 요청한 lock이 후배 (즉 == 오른쪽)가 들고 있는 lock이라 동일할때*/
 			if (temp->lock == lock){
 				e = list_remove(e);
 			}
 			else {
+				/* multiple donation 상황이네 */
 				e = list_next(e);
 			}
 		}
 	}
-
+	/* 선배한테 lock을 줬으니, 쫄려서 후다닥 다시 지 학번으로 돌아가야된다 */
 	if (list_empty(&curr->donation_list)){
 		curr->priority = curr->original_priority;
 	}
+	/* 15학번 선배의 요청을 들어드려서, 지쳐서 23학번으로 가고 싶은데, 시부레 17선배 요청 건이 남아 있다, 그럼 후배는 17 과잠을 입어야된다 */
 	else{
 		for (e = list_begin(&curr->donation_list); e != list_end(&curr->donation_list); e = list_next(e)){
 			temp = list_entry (e, struct thread, donation_elem);

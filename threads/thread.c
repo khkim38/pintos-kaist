@@ -212,7 +212,8 @@ thread_create (const char *name, int priority,
 	thread_unblock (t);
 
 	/* project1 priority */
-	if (thread_current()->priority < t->priority)
+	/* 현재 실행되는 쓰레드의 piority가 새로 만들어진 쓰레드의 priority 작으면 yield*/
+	if (thread_current()->priority < t->priority) 
 		thread_yield();
 
 	return tid;
@@ -313,6 +314,8 @@ thread_yield (void) {
 
 	old_level = intr_disable ();
 	/* project1 priority */
+	/* running thread가 우선순위에 밀려 yield 되서 ready_list에 들어갈 때도, prioirty 비교 */
+	/* interrupt의 기능 골고루 분배하기 위해 실행시키는 쓰레드를 yield 시킨다 이때 ready_list를 항상 sorted 되게 유지한다 */
 	if (curr != idle_thread){
 		// list_push_back (&ready_list, &curr->elem);
 		list_insert_ordered (&ready_list, &curr->elem, &compare_priority, NULL);
@@ -329,6 +332,7 @@ thread_set_priority (int new_priority) {
 	/* project1 donation */
 	thread_current ()->original_priority = new_priority;
 
+	/* thread_current ()->priority = new_priority 행동으로 인해 donation 받은 priority가 소실되는 것을 막기 위한 코드 */
 	struct thread *curr = thread_current();
 	struct thread *temp;
 	struct list_elem *e;

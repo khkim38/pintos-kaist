@@ -18,6 +18,7 @@ void sema_self_test (void);
 
 /* Lock. */
 struct lock {
+	/* lock를 들고 있는 쓰레드 */
 	struct thread *holder;      /* Thread holding lock (for debugging). */
 	struct semaphore semaphore; /* Binary semaphore controlling access. */
 };
