@@ -3,4 +3,4 @@ Some tick counts were missing or differed from those expected by more than 50.
 thread   actual <-> expected explanation
 ------ -------- --- -------- ----------------------------------------
      0      805 <<< 1500     Too small, by 645.
-     1     2196 >>> 1500     Too big, by 646.
+     1     2197 >>> 1500     Too big, by 647.

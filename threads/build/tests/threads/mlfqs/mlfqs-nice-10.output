@@ -4,14 +4,14 @@ Kernel command line: -q -mlfqs run mlfqs-nice-10
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  157,081,600 loops/s.
+Calibrating timer...  105,062,400 loops/s.
 Boot complete.
 Executing 'mlfqs-nice-10':
 (mlfqs-nice-10) begin
 (mlfqs-nice-10) Starting 10 threads...
-(mlfqs-nice-10) Starting threads took 1 ticks.
+(mlfqs-nice-10) Starting threads took 0 ticks.
 (mlfqs-nice-10) Sleeping 40 seconds to let threads run, please wait...
-(mlfqs-nice-10) Thread 0 received 3000 ticks.
+(mlfqs-nice-10) Thread 0 received 3001 ticks.
 (mlfqs-nice-10) Thread 1 received 0 ticks.
 (mlfqs-nice-10) Thread 2 received 0 ticks.
 (mlfqs-nice-10) Thread 3 received 0 ticks.
@@ -23,8 +23,8 @@ Executing 'mlfqs-nice-10':
 (mlfqs-nice-10) Thread 9 received 0 ticks.
 (mlfqs-nice-10) end
 Execution of 'mlfqs-nice-10' complete.
-Timer: 4044 ticks
-Thread: 1000 idle ticks, 3044 kernel ticks, 0 user ticks
+Timer: 4051 ticks
+Thread: 1000 idle ticks, 3051 kernel ticks, 0 user ticks
 Console: 1026 characters output
 Keyboard: 0 keys pressed
 Powering off...

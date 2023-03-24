@@ -196,7 +196,13 @@ lock_acquire (struct lock *lock) {
 	ASSERT (lock != NULL);
 	ASSERT (!intr_context ());
 	ASSERT (!lock_held_by_current_thread (lock));
-	
+	/*project1 mlfqs*/
+	/*mlfqs에서는 donation이 일어나지 않는다.*/
+	if (thread_mlfqs) {
+		sema_down(&lock->semaphore);
+		lock->holder=thread_current();
+		return;
+	}
 	/* project1 donation*/
 	struct thread *curr = thread_current();
 	struct thread *temp;
@@ -249,6 +255,13 @@ void
 lock_release (struct lock *lock) {
 	ASSERT (lock != NULL);
 	ASSERT (lock_held_by_current_thread (lock));
+	/*project1 mlfqs*/
+	/*mlfqs에서는 donation이 일어나지 않는다.*/
+	if (thread_mlfqs){
+		lock->holder=NULL;
+		sema_up(&lock->semaphore);
+		return;
+	}
 
 	/* project1 donation*/
 	struct thread *curr = thread_current();

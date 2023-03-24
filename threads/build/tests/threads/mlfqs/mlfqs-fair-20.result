@@ -3,20 +3,20 @@ Some tick counts were missing or differed from those expected by more than 20.
 thread   actual <-> expected explanation
 ------ -------- --- -------- ----------------------------------------
      0        4 <<< 152      Too small, by 128.
-     1        4 <<< 152      Too small, by 128.
+     1        5 <<< 152      Too small, by 127.
      2        5 <<< 152      Too small, by 127.
      3        4 <<< 152      Too small, by 128.
-     4        5 <<< 152      Too small, by 127.
+     4        4 <<< 152      Too small, by 128.
      5        4 <<< 152      Too small, by 128.
-     6        5 <<< 152      Too small, by 127.
+     6        4 <<< 152      Too small, by 128.
      7        4 <<< 152      Too small, by 128.
      8        4 <<< 152      Too small, by 128.
-     9        5 <<< 152      Too small, by 127.
-    10        4 <<< 148      Too small, by 124.
-    11        4 <<< 148      Too small, by 124.
-    12        5 <<< 148      Too small, by 123.
+     9        4 <<< 152      Too small, by 128.
+    10        5 <<< 148      Too small, by 123.
+    11        5 <<< 148      Too small, by 123.
+    12        4 <<< 148      Too small, by 124.
     13        4 <<< 148      Too small, by 124.
-    14        4 <<< 148      Too small, by 124.
+    14        5 <<< 148      Too small, by 123.
     15        4 <<< 148      Too small, by 124.
     16        5 <<< 148      Too small, by 123.
     17        5 <<< 148      Too small, by 123.
