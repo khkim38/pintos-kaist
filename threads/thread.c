@@ -55,6 +55,10 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
+/*project1 mlfqs*/
+/*load_avg는 thread고유값 아님, 따라서 global variable 초기값 0으로 설정*/
+int load_avg=0;
+#define FIXED (1<<14)
 
 static void kernel_thread (thread_func *, void *aux);
 
@@ -327,6 +331,11 @@ thread_yield (void) {
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) {
+	/*project1 mlfqs*/
+	/*mlfqs 상황에서는 thread의 priority를 임의로 바꿀 수 없다*/
+	if(thread_mlfqs){
+		return;
+	}
 	thread_current ()->priority = new_priority;
 
 	/* project1 donation */
@@ -361,27 +370,49 @@ thread_get_priority (void) {
 void
 thread_set_nice (int nice UNUSED) {
 	/* TODO: Your implementation goes here */
+	/*project1 mlfqs*/
+	/*thread의 niceness 변경 후 priority 변경*/
+	thread_current()->niceness=nice;
+	calculating_priority(thread_current());
+	if (list_empty(&ready_list)) return;
+	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
+		thread_yield();
 }
 
 /* Returns the current thread's nice value. */
 int
 thread_get_nice (void) {
 	/* TODO: Your implementation goes here */
-	return 0;
+	/*project1 mlfqs*/
+	return thread_current()->niceness;
 }
 
 /* Returns 100 times the system load average. */
 int
 thread_get_load_avg (void) {
 	/* TODO: Your implementation goes here */
-	return 0;
+	/*projecr1 mlfqs*/
+	/*avg에 100을 곱한 후, 소수점 둘째까지*/
+	int avg_cent = load_avg*100;
+	if (avg_cent>=0) {
+		return (avg_cent+FIXED/2)/FIXED;
+	} else {
+		return (avg_cent-FIXED/2)/FIXED;
+	}
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void) {
 	/* TODO: Your implementation goes here */
-	return 0;
+	/*projecr1 mlfqs*/
+	/*recent cpu에 100을 곱한 후, 소수점 둘째까지*/
+	int cpu_cent = thread_current()->recent_cpu*100;
+	if (cpu_cent>=0) {
+		return (cpu_cent+FIXED/2)/FIXED;
+	} else {
+		return (cpu_cent-FIXED/2)/FIXED;
+	}
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -451,6 +482,10 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->original_priority=priority;
 	t->lock=NULL;
 	list_init(&t->donation_list);
+	/*project1 mlfqs*/
+	/*default value is both 0*/
+	t->niceness=NICE_DEFAULT;
+	t->recent_cpu=RECENT_CPU_DEFAULT;
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
@@ -670,8 +705,60 @@ bool compare_priority(struct list_elem *a, struct list_elem *b){
 }
 
 /* project1 semaphore */
-void compare_priority_current(){
+void compare_priority_current(void){
 	if (list_empty(&ready_list)) return;
 	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
 		thread_yield();
+}
+
+/*project1 mlfqs*/
+/*priority를 다시 계산해준다*/
+void calculating_all_priority(void){
+	struct list_elem *e;
+	for (e = list_begin(&ready_list); e != list_end(&ready_list);){
+		struct thread *t=list_entry(e,struct thread,elem);
+		if (t == idle_thread) return;
+		else {
+			t->priority = ((PRI_MAX-(2*t->niceness))*FIXED - (t->recent_cpu/4))/FIXED;
+		}
+		e = list_next(e);
+	}
+}
+void calculating_priority(struct thread *t){
+	if (t == idle_thread) return;
+		else {
+			t->priority = ((PRI_MAX-(2*t->niceness))*FIXED - (t->recent_cpu/4))/FIXED;
+		}
+}
+/*recent_cpu를 다시 계산해준다*/
+void calculating_recent_cpu(void){
+	struct list_elem *e;
+	for (e = list_begin(&ready_list); e != list_end(&ready_list);){
+		struct thread *t=list_entry(e,struct thread,elem);
+		if (t == idle_thread) return;
+		else {
+			t->recent_cpu = (((int64_t)((((int64_t)(2*load_avg))*FIXED)/(2*load_avg+(1*FIXED))))*t->recent_cpu/FIXED)+t->niceness*FIXED;
+		}
+		e = list_next(e);
+	}
+}
+/*load_avg를 새롭게 구하는 공식*/
+void calculating_load_avg(void){
+	int number_thread;
+	if(thread_current()==idle_thread){
+		number_thread=list_size(&ready_list);
+	} else{
+		number_thread=list_size(&ready_list)+1;
+	}
+	int load_avg_portion = (int64_t)(59*FIXED)/60;
+	int load_avg_result=(int64_t)(load_avg_portion)*load_avg/FIXED;
+	int thread_result=(int64_t)(1*FIXED)/60*number_thread;
+	load_avg=load_avg_result+thread_result;
+}
+void increase_cpu(void){
+	if(thread_current()==idle_thread){
+		return;
+	} else{
+		thread_current()->recent_cpu=thread_current()->recent_cpu+(1*FIXED);
+	}
 }

@@ -27,6 +27,10 @@ typedef int tid_t;
 #define PRI_MIN 0                       /* Lowest priority. */
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
+/*project1 mlfqs*/
+#define NICE_DEFAULT 0
+#define RECENT_CPU_DEFAULT 0
+
 
 /* A kernel thread or user process.
  *
@@ -106,6 +110,11 @@ struct thread {
 	struct list_elem donation_elem;
 	/* 요청한 lock */
 	struct lock *lock;
+	/*project1 mlfqs*/
+	/*niceness는 thread 고유값 integer 설정, 초기설정 0*/
+	int niceness;
+	/*cpu 사용시간 real number 하지만 integer로 설정, 초기설정 0*/
+	int recent_cpu;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
@@ -163,4 +172,10 @@ void thread_awake(int64_t ticks);
 bool compare_priority(struct list_elem *a, struct list_elem *b);
 /* project1 semaphore */
 void compare_priority_current();
+/*project1 mlfqs*/
+void calculating_priority(struct thread *t);
+void calculating_all_priority(void);
+void calculating_recent_cpu(void);
+void calculating_load_avg(void);
+void increase_cpu(void);
 #endif /* threads/thread.h */
