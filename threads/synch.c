@@ -119,6 +119,8 @@ sema_up (struct semaphore *sema) {
 		thread_unblock (list_entry (list_pop_front (&sema->waiters),
 					struct thread, elem));
 	sema->value++;
+	/* project1 semaphore */
+ 	compare_priority_current();
 	intr_set_level (old_level);
 }
 
