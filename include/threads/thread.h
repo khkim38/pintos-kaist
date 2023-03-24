@@ -174,6 +174,7 @@ bool compare_priority(struct list_elem *a, struct list_elem *b);
 void compare_priority_current();
 /*project1 mlfqs*/
 void calculating_priority(struct thread *t);
+void calculating_cpu(struct thread *t);
 void calculating_all_priority(void);
 void calculating_recent_cpu(void);
 void calculating_load_avg(void);

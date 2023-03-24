@@ -120,7 +120,7 @@ sema_up (struct semaphore *sema) {
 					struct thread, elem));
 	sema->value++;
 	/* project1 semaphore */
-	compare_priority_current();
+ 	compare_priority_current();
 	intr_set_level (old_level);
 }
 

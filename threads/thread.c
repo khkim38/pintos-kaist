@@ -11,6 +11,8 @@
 #include "threads/synch.h"
 #include "threads/vaddr.h"
 #include "intrinsic.h"
+/*project1 mlfqs*/
+#include "threads/fixed-point.h"
 #ifdef USERPROG
 #include "userprog/process.h"
 #endif
@@ -133,7 +135,8 @@ thread_start (void) {
 	struct semaphore idle_started;
 	sema_init (&idle_started, 0);
 	thread_create ("idle", PRI_MIN, idle, &idle_started);
-
+	/*project1 mlfqs*/
+	load_avg=0;
 	/* Start preemptive thread scheduling. */
 	intr_enable ();
 
@@ -705,11 +708,12 @@ bool compare_priority(struct list_elem *a, struct list_elem *b){
 }
 
 /* project1 semaphore */
-void compare_priority_current(void){
-	if (list_empty(&ready_list)) return;
-	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
-		thread_yield();
-}
+ void compare_priority_current(void){
+	if (thread_current() == idle_thread) return;
+ 	if (list_empty(&ready_list)) return;
+ 	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
+ 		thread_yield();
+ }
 
 /*project1 mlfqs*/
 /*priority를 다시 계산해준다*/
@@ -717,17 +721,19 @@ void calculating_all_priority(void){
 	struct list_elem *e;
 	for (e = list_begin(&ready_list); e != list_end(&ready_list);){
 		struct thread *t=list_entry(e,struct thread,elem);
-		if (t == idle_thread) return;
-		else {
-			t->priority = ((PRI_MAX-(2*t->niceness))*FIXED - (t->recent_cpu/4))/FIXED;
-		}
+		calculating_priority(t);
+		e = list_next(e);
+	}
+	for (e = list_begin(&sleep_list); e != list_end(&sleep_list);){
+		struct thread *t=list_entry(e,struct thread,elem);
+		calculating_priority(t);
 		e = list_next(e);
 	}
 }
 void calculating_priority(struct thread *t){
 	if (t == idle_thread) return;
 		else {
-			t->priority = ((PRI_MAX-(2*t->niceness))*FIXED - (t->recent_cpu/4))/FIXED;
+			t->priority = fp_int(add_int(div_int(t->recent_cpu,-4),PRI_MAX-t->niceness*2));
 		}
 }
 /*recent_cpu를 다시 계산해준다*/
@@ -735,11 +741,19 @@ void calculating_recent_cpu(void){
 	struct list_elem *e;
 	for (e = list_begin(&ready_list); e != list_end(&ready_list);){
 		struct thread *t=list_entry(e,struct thread,elem);
-		if (t == idle_thread) return;
-		else {
-			t->recent_cpu = (((int64_t)((((int64_t)(2*load_avg))*FIXED)/(2*load_avg+(1*FIXED))))*t->recent_cpu/FIXED)+t->niceness*FIXED;
-		}
+		calculating_cpu(t);
 		e = list_next(e);
+	}
+	for (e = list_begin(&sleep_list); e != list_end(&sleep_list);){
+		struct thread *t=list_entry(e,struct thread,elem);
+		calculating_cpu(t);
+		e = list_next(e);
+	}
+}
+void calculating_cpu(struct thread *t){
+	if (t == idle_thread) return;
+		else {
+			t->recent_cpu = add_int(mul_fp(div_fp(mul_int(load_avg,2),add_int(mul_int(load_avg,2),1)),t->recent_cpu),t->niceness);
 	}
 }
 /*load_avg를 새롭게 구하는 공식*/
@@ -750,15 +764,12 @@ void calculating_load_avg(void){
 	} else{
 		number_thread=list_size(&ready_list)+1;
 	}
-	int load_avg_portion = (int64_t)(59*FIXED)/60;
-	int load_avg_result=(int64_t)(load_avg_portion)*load_avg/FIXED;
-	int thread_result=(int64_t)(1*FIXED)/60*number_thread;
-	load_avg=load_avg_result+thread_result;
+	load_avg=(add_fp(mul_fp(div_fp(int_fp(59),int_fp(60)),load_avg),mul_int(div_fp(int_fp(1),int_fp(60)),number_thread)));
 }
 void increase_cpu(void){
 	if(thread_current()==idle_thread){
 		return;
 	} else{
-		thread_current()->recent_cpu=thread_current()->recent_cpu+(1*FIXED);
+		thread_current()->recent_cpu=add_int(thread_current()->recent_cpu,1);
 	}
 }
