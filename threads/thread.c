@@ -704,13 +704,6 @@ bool compare_priority(struct list_elem *a, struct list_elem *b){
 	return list_entry(a, struct thread, elem)->priority > list_entry(b, struct thread, elem)->priority;
 }
 
-/* project1 semaphore */
-void compare_priority_current(void){
-	if (list_empty(&ready_list)) return;
-	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
-		thread_yield();
-}
-
 /*project1 mlfqs*/
 /*priority를 다시 계산해준다*/
 void calculating_all_priority(void){
