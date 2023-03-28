@@ -371,15 +371,16 @@ thread_get_priority (void) {
 
 /* Sets the current thread's nice value to NICE. */
 void
-thread_set_nice (int nice UNUSED) {
+thread_set_nice (int nice) {
 	/* TODO: Your implementation goes here */
 	/*project1 mlfqs*/
 	/*thread의 niceness 변경 후 priority 변경*/
 	thread_current()->niceness=nice;
 	calculating_priority(thread_current());
 	if (list_empty(&ready_list)) return;
-	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority)
+	if (list_entry(list_begin(&ready_list), struct thread, elem)->priority > thread_current()->priority){
 		thread_yield();
+		}
 }
 
 /* Returns the current thread's nice value. */
@@ -396,12 +397,8 @@ thread_get_load_avg (void) {
 	/* TODO: Your implementation goes here */
 	/*projecr1 mlfqs*/
 	/*avg에 100을 곱한 후, 소수점 둘째까지*/
-	int avg_cent = load_avg*100;
-	if (avg_cent>=0) {
-		return (avg_cent+FIXED/2)/FIXED;
-	} else {
-		return (avg_cent-FIXED/2)/FIXED;
-	}
+	int avg_cent = mul_int(load_avg,100);
+	fp_int_round(avg_cent);
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
@@ -410,12 +407,8 @@ thread_get_recent_cpu (void) {
 	/* TODO: Your implementation goes here */
 	/*projecr1 mlfqs*/
 	/*recent cpu에 100을 곱한 후, 소수점 둘째까지*/
-	int cpu_cent = thread_current()->recent_cpu*100;
-	if (cpu_cent>=0) {
-		return (cpu_cent+FIXED/2)/FIXED;
-	} else {
-		return (cpu_cent-FIXED/2)/FIXED;
-	}
+	int cpu_cent = mul_int(thread_current()->recent_cpu,100);
+	fp_int_round(cpu_cent);
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -487,8 +480,8 @@ init_thread (struct thread *t, const char *name, int priority) {
 	list_init(&t->donation_list);
 	/*project1 mlfqs*/
 	/*default value is both 0*/
-	t->niceness=NICE_DEFAULT;
-	t->recent_cpu=RECENT_CPU_DEFAULT;
+	t->niceness=0;
+	t->recent_cpu=0;
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
@@ -729,6 +722,7 @@ void calculating_all_priority(void){
 		calculating_priority(t);
 		e = list_next(e);
 	}
+	calculating_priority(thread_current());
 }
 void calculating_priority(struct thread *t){
 	if (t == idle_thread) return;
@@ -749,6 +743,7 @@ void calculating_recent_cpu(void){
 		calculating_cpu(t);
 		e = list_next(e);
 	}
+	calculating_cpu(thread_current());
 }
 void calculating_cpu(struct thread *t){
 	if (t == idle_thread) return;
