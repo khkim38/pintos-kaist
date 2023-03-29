@@ -131,10 +131,12 @@ timer_interrupt (struct intr_frame *args UNUSED) {
 	if (thread_mlfqs){
 		increase_cpu();
 		if (ticks%4==0){
-			calculating_all_priority();
 			if (ticks%TIMER_FREQ==0){
-				calculating_recent_cpu();
 				calculating_load_avg();
+				calculating_recent_cpu();
+				calculating_all_priority();
+			} else{
+				calculating_all_priority();
 			}
 		}
 	}
