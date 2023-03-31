@@ -60,7 +60,7 @@ bool thread_mlfqs;
 /*project1 mlfqs*/
 /*load_avg는 thread고유값 아님, 따라서 global variable 초기값 0으로 설정*/
 int load_avg=0;
-#define FIXED (1<<14)
+
 
 static void kernel_thread (thread_func *, void *aux);
 
@@ -136,7 +136,7 @@ thread_start (void) {
 	sema_init (&idle_started, 0);
 	thread_create ("idle", PRI_MIN, idle, &idle_started);
 	/*project1 mlfqs*/
-	load_avg=0;
+	//load_avg=0;
 	/* Start preemptive thread scheduling. */
 	intr_enable ();
 
