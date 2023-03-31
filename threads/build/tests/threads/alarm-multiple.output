@@ -50,8 +50,13 @@ Executing 'alarm-multiple':
 (alarm-multiple) thread 4: duration=50, iteration=7, product=350
 (alarm-multiple) end
 Execution of 'alarm-multiple' complete.
+<<<<<<< HEAD
 Timer: 594 ticks
 Thread: 550 idle ticks, 44 kernel ticks, 0 user ticks
+=======
+Timer: 599 ticks
+Thread: 550 idle ticks, 49 kernel ticks, 0 user ticks
+>>>>>>> a086208f7b1529246493003aec3ae3220c8b68b3
 Console: 2994 characters output
 Keyboard: 0 keys pressed
 Powering off...
