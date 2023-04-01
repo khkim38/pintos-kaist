@@ -474,6 +474,10 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->priority = priority;
 	t->magic = THREAD_MAGIC;
 
+	/* project2 systemcall */
+	t->exit = 0;
+	/* ------------------- */
+
 	/* project1 donation */
 	t->original_priority=priority;
 	t->lock=NULL;

@@ -97,6 +97,11 @@ struct thread {
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
 
+	/* project2 system call */
+	int fd_idx;
+	struct file **file_list;
+	/* -------------------- */
+
 	/* project1 alarm clock */
 	int64_t awake_time;
 
@@ -116,7 +121,9 @@ struct thread {
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
-	uint64_t *pml4;                     /* Page map level 4 */
+	/* project2 muted */
+	// uint64_t *pml4;                     /* Page map level 4 */
+	/* -------------- */
 #endif
 #ifdef VM
 	/* Table for whole virtual memory owned by thread. */
@@ -124,6 +131,16 @@ struct thread {
 #endif
 
 	/* Owned by thread.c. */
+	/* project2 system call */
+	int exit;
+	/* -------------------- */
+
+	/* project2  */
+	/* todo: for project3, must delete */
+	uint64_t *pml4;
+	/* ------------------------------- */
+
+
 	struct intr_frame tf;               /* Information for switching */
 	unsigned magic;                     /* Detects stack overflow. */
 };

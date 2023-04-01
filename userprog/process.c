@@ -50,8 +50,13 @@ process_create_initd (const char *file_name) {
 		return TID_ERROR;
 	strlcpy (fn_copy, file_name, PGSIZE);
 
+	/* project2 systemcall */
+	char *process_name, *_temp;
+	process_name = strtok_r(file_name, " ", &_temp);
+	/* ------------------- */
+
 	/* Create a new thread to execute FILE_NAME. */
-	tid = thread_create (file_name, PRI_DEFAULT, initd, fn_copy);
+	tid = thread_create (process_name, PRI_DEFAULT, initd, fn_copy);
 	if (tid == TID_ERROR)
 		palloc_free_page (fn_copy);
 	return tid;
@@ -204,6 +209,9 @@ process_wait (tid_t child_tid UNUSED) {
 	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
 	 * XXX:       to add infinite loop here before
 	 * XXX:       implementing the process_wait. */
+	/* project2 */
+	for (int i = 0; i < 1000000000; i++){}
+	/* -------- */
 	return -1;
 }
 
@@ -320,6 +328,41 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
  * Stores the executable's entry point into *RIP
  * and its initial stack pointer into *RSP.
  * Returns true if successful, false otherwise. */
+
+/* project2 systemcall */
+void argument_stack(char **argv, int argc, struct intr_frame *if_) {
+    char *arg_address[128];
+    for (int i = argc-1; i>=0; i--) { 
+        int argv_len = strlen(argv[i]);
+        if_->rsp = if_->rsp - (argv_len + 1);
+        memcpy(if_->rsp, argv[i], argv_len+1);
+        arg_address[i] = if_->rsp;
+    }
+
+    while (if_->rsp % 8 != 0) 
+    {
+        if_->rsp--;
+        *(uint8_t *) if_->rsp = 0;
+    }
+
+    for (int i = argc; i >=0; i--){
+        if_->rsp = if_->rsp - 8;
+        if (i == argc) {
+            memset(if_->rsp, 0, sizeof(char **));
+        } 
+        else {
+            memcpy(if_->rsp, &arg_address[i], sizeof(char **));
+        }   
+    }
+    
+    if_->rsp = if_->rsp - 8;
+    memset(if_->rsp, 0, sizeof(void *));
+
+    if_->R.rdi  = argc;
+    if_->R.rsi = if_->rsp + 8;
+}
+/* ------------------- */
+
 static bool
 load (const char *file_name, struct intr_frame *if_) {
 	struct thread *t = thread_current ();
@@ -335,10 +378,27 @@ load (const char *file_name, struct intr_frame *if_) {
 		goto done;
 	process_activate (thread_current ());
 
+	/* project2 systemcall */
+	char copy_file_name[128];
+	memcpy(copy_file_name, file_name, strlen(file_name)+1);
+    char *argv[64];
+    char *token, *temp, *_temp;
+    int argc = 0;
+
+    token = strtok_r(copy_file_name, " ", &_temp);
+    temp = token;
+    argv[argc] = token;
+    while (token != NULL){
+        token = strtok_r(NULL, " ", &_temp);
+        argc++;
+        argv[argc] = token;
+    }
+	/* ------------------- */
+
 	/* Open executable file. */
-	file = filesys_open (file_name);
+	file = filesys_open (temp);
 	if (file == NULL) {
-		printf ("load: %s: open failed\n", file_name);
+		printf ("load: %s: open failed\n", temp);
 		goto done;
 	}
 
@@ -350,7 +410,7 @@ load (const char *file_name, struct intr_frame *if_) {
 			|| ehdr.e_version != 1
 			|| ehdr.e_phentsize != sizeof (struct Phdr)
 			|| ehdr.e_phnum > 1024) {
-		printf ("load: %s: error loading executable\n", file_name);
+		printf ("load: %s: error loading executable\n", temp);
 		goto done;
 	}
 
@@ -416,7 +476,7 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
-
+	argument_stack(argv, argc, if_);
 	success = true;
 
 done:
