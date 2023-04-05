@@ -29,10 +29,10 @@ Call stack: 0x80042185fb 0x800421cf48 0x800421d0c7 0x800420944b 0x8004209869 0x8
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.
-Timer: 326 ticks
-Thread: 32 idle ticks, 293 kernel ticks, 1 user ticks
+Timer: 82 ticks
+Thread: 30 idle ticks, 49 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 121 reads, 258 writes
 hd1:0: 110 reads, 0 writes
-Console: 1853 characters output
+Console: 1851 characters output
 Key

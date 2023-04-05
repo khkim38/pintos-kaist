@@ -159,11 +159,11 @@ int open(const char *file){
 int filesize(int fd){
 	return 0;
 }
-
+/*jhy*/
 int read(int fd, void *buffer, unsigned size){
 	return 0;
 }
-
+/*jh*/
 int write(int fd, const void *buffer, unsigned size){
 	printf("%s", buffer);
 	return size;
@@ -176,9 +176,11 @@ void seek(int fd, unsigned position){
 unsigned tell(int fd){
 	return 0;
 }
-
+/*jh*/
 void close(int fd){
-	return 0;
+	struct thread *t=thread_current();
+	file_close(t->file_list[fd]);
+	t->file_list[fd]=NULL;
 }
 
 /* -------- */
