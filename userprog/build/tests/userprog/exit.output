@@ -12,15 +12,14 @@ Formatting file system...done.
 Boot complete.
 Putting 'exit' into the file system...
 Executing 'exit':
-(exit) begin
 exit: exit(57)
 Execution of 'exit' complete.
-Timer: 656 ticks
-Thread: 33 idle ticks, 623 kernel ticks, 0 user ticks
+Timer: 603 ticks
+Thread: 30 idle ticks, 572 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 80 reads, 232 writes
 hd1:0: 102 reads, 0 writes
-Console: 792 characters output
+Console: 779 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

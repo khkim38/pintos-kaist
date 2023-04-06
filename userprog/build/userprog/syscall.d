@@ -8,4 +8,5 @@ userprog/syscall.o: ../../userprog/syscall.c \
  ../../include/threads/loader.h ../../include/userprog/gdt.h \
  ../../include/threads/flags.h ../../include/intrinsic.h \
  ../../include/threads/mmu.h ../../include/threads/pte.h \
- ../../include/threads/vaddr.h
+ ../../include/threads/vaddr.h ../../include/filesys/file.h \
+ ../../include/filesys/off_t.h

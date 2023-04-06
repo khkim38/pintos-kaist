@@ -28,7 +28,9 @@ typedef int tid_t;
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
 
-
+/* project2 system call (check) */
+// #define FDT_PAGES 3
+// #define FDCOUNT_LIMIT FDT_PAGES *(1 << 9)
 
 /* A kernel thread or user process.
  *
@@ -136,7 +138,7 @@ struct thread {
 	/* -------------------- */
 
 	/* project2  */
-	/* todo: for project3, must delete */
+	/* todo: for project3, must delete *pml4 */
 	uint64_t *pml4;
 	/* ------------------------------- */
 

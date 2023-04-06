@@ -1,1 +1,2 @@
-PASS
+FAIL
+missing 'begin' message

@@ -8,6 +8,9 @@
 #include "threads/flags.h"
 #include "intrinsic.h"
 
+/* project2 system call */
+#include "filesys/file.h"
+
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
 
@@ -95,9 +98,16 @@ syscall_handler (struct intr_frame *f UNUSED) {
 /* project2 */
 void check_address(void *addr) {
 	struct thread *cur = thread_current();
-	if (addr == NULL || !(is_user_vaddr(addr)) || pml4_get_page(cur->pml4, addr) == NULL)
-		exit(-1);
+	if (addr == NULL) exit(-1);
+	if (!(is_user_vaddr(addr))) exit(-1);
+	if (pml4_get_page(cur->pml4, addr) == NULL) exit(-1);
 }
+
+// void directory_to_file(int fd) {
+// 	struct thread *cur = thread_current();
+
+// 	return 0;
+// }
 
 void halt(void){
 	power_off();
@@ -157,28 +167,42 @@ int open(const char *file){
 }
 
 int filesize(int fd){
-	return 0;
+	struct thread *curr = thread_current();
+	if (fd < 0 ) return -1;
+	if (curr->file_list[fd] == NULL) return -1;
+	return file_length(curr->file_list[fd]);
 }
 /*jhy*/
 int read(int fd, void *buffer, unsigned size){
+	//check_address(buffer);
 	return 0;
+
 }
 /*jh*/
 int write(int fd, const void *buffer, unsigned size){
-	printf("%s", buffer);
-	return size;
+	//check_address(buffer);
+	return 0;
+
 }
 
 void seek(int fd, unsigned position){
-	return 0;
+	struct thread *curr = thread_current();
+	if (fd < 0 ) return -1;
+	if (curr->file_list[fd] == NULL) return -1;
+	file_seek(curr->file_list[fd], position);
 }
 
 unsigned tell(int fd){
-	return 0;
+	struct thread *curr = thread_current();
+	if (fd < 0 ) return -1;
+	if (curr->file_list[fd] == NULL) return -1;
+	return file_tell(curr->file_list[fd]);
 }
 /*jh*/
 void close(int fd){
 	struct thread *t=thread_current();
+	if (fd < 0) return NULL;
+	if(t->file_list[fd]==NULL) return NULL;
 	file_close(t->file_list[fd]);
 	t->file_list[fd]=NULL;
 }
