@@ -5,6 +5,7 @@ void syscall_init (void);
 
 /* project2 */
 void check_address(void *addr);
+// void directory_to_file(int file);
 
 void halt(void);
 void exit(int status);
