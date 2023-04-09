@@ -12,6 +12,7 @@ Formatting file system...done.
 Boot complete.
 Putting 'create-normal' into the file system...
 Executing 'create-normal':
+<<<<<<< HEAD
 create-normal: exit(0)
 Execution of 'create-normal' complete.
 Timer: 659 ticks
@@ -20,6 +21,19 @@ hd0:0: 0 reads, 0 writes
 hd0:1: 102 reads, 246 writes
 hd1:0: 103 reads, 0 writes
 Console: 833 characters output
+=======
+(create-normal) begin
+(create-normal) create quux.dat
+(create-normal) end
+create-normal: exit(0)
+Execution of 'create-normal' complete.
+Timer: 601 ticks
+Thread: 30 idle ticks, 570 kernel ticks, 1 user ticks
+hd0:0: 0 reads, 0 writes
+hd0:1: 102 reads, 246 writes
+hd1:0: 103 reads, 0 writes
+Console: 907 characters output
+>>>>>>> e2002c0e6d4da1fa757729a93ff6f63c34e2f213
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

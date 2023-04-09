@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 FAIL
 Test output failed to match any acceptable form.
 
@@ -59,3 +60,6 @@ Differences in `diff -u' format:
 - (args) argv[23] = null
 - (args) end
   args-many: exit(0)
+=======
+PASS
+>>>>>>> e2002c0e6d4da1fa757729a93ff6f63c34e2f213
