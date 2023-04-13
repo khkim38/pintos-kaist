@@ -10,6 +10,7 @@
 
 /* project2 system call */
 #include "filesys/file.h"
+#include "userprog/process.h"
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
@@ -174,14 +175,42 @@ int filesize(int fd){
 }
 /*jhy*/
 int read(int fd, void *buffer, unsigned size){
-	//check_address(buffer);
-	return 0;
+	check_address(buffer);
+	int read_out;
+	if (fd==0){
+		for (int i=0;i<size;i++){
+			((char*)buffer)[i]=input_getc();
+		}
+		read_out=size;
+	} else if (fd<2){
+		return -1;
+	} else {
+		struct thread *curr=thread_current();
+		if (fd<0) return -1;
+		if (curr->file_list[fd]==NULL) return -1;
+		read_out=file_read(curr->file_list[fd],buffer,size);
+	}
+	//printf("%s", buffer);
+	return read_out;
 
 }
 /*jh*/
 int write(int fd, const void *buffer, unsigned size){
-	//check_address(buffer);
-	return 0;
+	check_address(buffer);
+	int write_out;
+	if (fd==1){
+		putbuf(buffer,size);
+		write_out=size;
+	} else if (fd<2){
+		return -1;
+	} else {
+		struct thread *curr=thread_current();
+		if (fd<0) return -1;
+		if (curr->file_list[fd]==NULL) return -1;
+		write_out=file_write(curr->file_list[fd],buffer,size);
+	}
+	//printf("%s", buffer);
+	return write_out;
 
 }
 
@@ -201,8 +230,8 @@ unsigned tell(int fd){
 /*jh*/
 void close(int fd){
 	struct thread *t=thread_current();
-	if (fd < 0) return NULL;
-	if(t->file_list[fd]==NULL) return NULL;
+	if (fd < 0) return ;
+	if(t->file_list[fd]==NULL) return ;
 	file_close(t->file_list[fd]);
 	t->file_list[fd]=NULL;
 }

@@ -1,13 +1,1 @@
-<<<<<<< HEAD
-FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (exit) begin
-  exit: exit(57)
-Differences in `diff -u' format:
-- (exit) begin
-  exit: exit(57)
-=======
 PASS
->>>>>>> e2002c0e6d4da1fa757729a93ff6f63c34e2f213

@@ -1,20 +1,14 @@
 FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (write-bad-fd) begin
-  (write-bad-fd) end
-  write-bad-fd: exit(0)
-Differences in `diff -u' format:
-  (write-bad-fd) begin
-- (write-bad-fd) end
-+ {°ÿGG{°ÿGG{°ÿGG{°ÿGG{°ÿGG{°ÿGG{°ÿGG(write-bad-fd) end
-  write-bad-fd: exit(0)
-Acceptable output:
-  (write-bad-fd) begin
-  write-bad-fd: exit(-1)
-Differences in `diff -u' format:
-  (write-bad-fd) begin
-- write-bad-fd: exit(-1)
-+ {°ÿGG{°ÿGG{°ÿGG{°ÿGG{°ÿGG{°ÿGG{°ÿGG(write-bad-fd) end
-+ write-bad-fd: exit(0)
+Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x80042185fb 0x800421cf48 0x800421d0c7 0x800420944b 0x8004209869 0x800421d3c6 0x800421d13c 0x400111 0x40021d 0x400cbe
+Translation of call stack:
+0x00000080042185fb: debug_panic (lib/kernel/debug.c:32)
+0x000000800421cf48: kill (userprog/exception.c:103)
+0x000000800421d0c7: page_fault (userprog/exception.c:159 (discriminator 12))
+0x000000800420944b: intr_handler (threads/interrupt.c:352)
+0x0000008004209869: intr_entry (threads/intr-stubs.o:?)
+0x000000800421d3c6: syscall_handler (userprog/syscall.c:81)
+0x000000800421d13c: no_sti (userprog/syscall-entry.o:?)
+0x0000000000400111: (unknown)
+0x000000000040021d: (unknown)
+0x0000000000400cbe: (unknown)

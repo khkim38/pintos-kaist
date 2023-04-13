@@ -1,13 +1,1 @@
-<<<<<<< HEAD
-FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (create-null) begin
-  create-null: exit(-1)
-Differences in `diff -u' format:
-- (create-null) begin
-  create-null: exit(-1)
-=======
 PASS
->>>>>>> e2002c0e6d4da1fa757729a93ff6f63c34e2f213

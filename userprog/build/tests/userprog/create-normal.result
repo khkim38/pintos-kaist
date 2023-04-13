@@ -1,17 +1,1 @@
-<<<<<<< HEAD
-FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (create-normal) begin
-  (create-normal) create quux.dat
-  (create-normal) end
-  create-normal: exit(0)
-Differences in `diff -u' format:
-- (create-normal) begin
-- (create-normal) create quux.dat
-- (create-normal) end
-  create-normal: exit(0)
-=======
 PASS
->>>>>>> e2002c0e6d4da1fa757729a93ff6f63c34e2f213
