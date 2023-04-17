@@ -124,7 +124,7 @@ struct thread {
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
 	/* project2 muted */
-	// uint64_t *pml4;                     /* Page map level 4 */
+	 uint64_t *pml4;                     /* Page map level 4 */
 	/* -------------- */
 #endif
 #ifdef VM
@@ -134,12 +134,13 @@ struct thread {
 
 	/* Owned by thread.c. */
 	/* project2 system call */
+	/*exit status 초기값 0으로 thread.c에서 설정*/
 	int exit;
 	/* -------------------- */
 
 	/* project2  */
 	/* todo: for project3, must delete *pml4 */
-	uint64_t *pml4;
+	//uint64_t *pml4;
 	/* ------------------------------- */
 
 

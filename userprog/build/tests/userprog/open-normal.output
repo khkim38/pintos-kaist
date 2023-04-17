@@ -15,23 +15,23 @@ Putting 'sample.txt' into the file system...
 Executing 'open-normal':
 (open-normal) begin
 Page fault at 0: not present error reading page in kernel context.
-Interrupt 0x0e (#PF Page-Fault Exception) at rip=800421d74b
+Interrupt 0x0e (#PF Page-Fault Exception) at rip=800421d7ea
  cr2=0000000000000000 error=               0
 rax 0000000000000000 rbx 0000000000000000 rcx 0000000000000000 rdx 0000000000000000
 rsp 0000008004240ee0 rbp 0000008004240f10 rsi 0000000000000000 rdi 000000800423c038
-rip 000000800421d74b r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
-r11 0000000000000216 r12 000000800421d1fd r13 0000000000000000 r14 0000000000000000
+rip 000000800421d7ea r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
+r11 0000000000000216 r12 000000800421d29c r13 0000000000000000 r14 0000000000000000
 r15 0000000000000000 rflags 00000246
 es: 001b ds: 001b cs: 0008 ss: 0010
 Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x80042185fb 0x800421cf48 0x800421d0c7 0x800420944b 0x8004209869 0x800421d324 0x800421d13c 0x400106 0x40018d 0x400c2e.
+Call stack: 0x80042185fb 0x800421cfe7 0x800421d166 0x800420944b 0x8004209869 0x800421d3c3 0x800421d1db 0x400106 0x40018d 0x400c2e.
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.
-Timer: 88 ticks
-Thread: 30 idle ticks, 55 kernel ticks, 3 user ticks
+Timer: 290 ticks
+Thread: 34 idle ticks, 254 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 111 reads, 248 writes
 hd1:0: 105 reads, 0 writes
-Console: 1807 characters output
+Console: 1809 characters output
 Key

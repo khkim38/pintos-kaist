@@ -104,12 +104,6 @@ void check_address(void *addr) {
 	if (pml4_get_page(cur->pml4, addr) == NULL) exit(-1);
 }
 
-// void directory_to_file(int fd) {
-// 	struct thread *cur = thread_current();
-
-// 	return 0;
-// }
-
 void halt(void){
 	power_off();
 }

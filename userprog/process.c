@@ -50,9 +50,9 @@ process_create_initd (const char *file_name) {
 		return TID_ERROR;
 	strlcpy (fn_copy, file_name, PGSIZE);
 
-	/* project2 systemcall */
-	char *process_name, *_temp;
-	process_name = strtok_r(file_name, " ", &_temp);
+	/* project2 argument_parsing */
+	char *process_name, *saveptr;
+	process_name = strtok_r(file_name, " ", &saveptr);
 	/* ------------------- */
 
 	/* Create a new thread to execute FILE_NAME. */
@@ -329,37 +329,35 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
  * and its initial stack pointer into *RSP.
  * Returns true if successful, false otherwise. */
 
-/* project2 systemcall */
+/* project2 argument_parsing */
 void argument_stack(char **argv, int argc, struct intr_frame *if_) {
-    char *arg_address[128];
-    for (int i = argc-1; i>=0; i--) { 
-        int argv_len = strlen(argv[i]);
-        if_->rsp = if_->rsp - (argv_len + 1);
-        memcpy(if_->rsp, argv[i], argv_len+1);
-        arg_address[i] = if_->rsp;
-    }
-
-    while (if_->rsp % 8 != 0) 
-    {
-        if_->rsp--;
-        *(uint8_t *) if_->rsp = 0;
-    }
-
-    for (int i = argc; i >=0; i--){
-        if_->rsp = if_->rsp - 8;
-        if (i == argc) {
-            memset(if_->rsp, 0, sizeof(char **));
-        } 
-        else {
-            memcpy(if_->rsp, &arg_address[i], sizeof(char **));
-        }   
-    }
-    
-    if_->rsp = if_->rsp - 8;
-    memset(if_->rsp, 0, sizeof(void *));
-
-    if_->R.rdi  = argc;
-    if_->R.rsi = if_->rsp + 8;
+	/*store argument value in stack*/
+	if_->R.rdi=argc;
+	char *adress_store[argc];
+	int count_of_total_char=0;
+	for (int i=argc-1;i>=0;i--){
+		if_->rsp=if_->rsp-(strlen(argv[i])+1);
+		memcpy(if_->rsp,argv[i],strlen(argv[i])+1);
+		adress_store[i]=if_->rsp;
+		count_of_total_char+=strlen(argv[i])+1;
+	}
+	/*store word-align*/
+	int word_align=8-(count_of_total_char%8);
+	for (int j=word_align;j>0;j--){
+		if_->rsp=if_->rsp-1;
+		*(uint8_t*) if_->rsp=0;
+	}
+	/*store adress*/
+	if_->rsp=if_->rsp-8;
+	memset(if_->rsp,0,sizeof(char**));
+	for (int i=argc-1;i>=0;i--){
+		if_->rsp=if_->rsp-8;
+		memcpy(if_->rsp,&adress_store[i],sizeof(char**));
+	}
+	/*return address*/
+	if_->rsp=if_->rsp-8;
+	memset(if_->rsp,0,sizeof(void*));
+	if_->R.rsi=if_->rsp+8;
 }
 /* ------------------- */
 
@@ -378,27 +376,27 @@ load (const char *file_name, struct intr_frame *if_) {
 		goto done;
 	process_activate (thread_current ());
 
-	/* project2 systemcall */
+	/* project2 argument_parsing */
 	char copy_file_name[128];
 	memcpy(copy_file_name, file_name, strlen(file_name)+1);
     char *argv[64];
-    char *token, *temp, *_temp;
+    char *token, *process_name, *saveptr;
     int argc = 0;
 
-    token = strtok_r(copy_file_name, " ", &_temp);
-    temp = token;
+    token = strtok_r(copy_file_name, " ", &saveptr);
+    process_name = token;
     argv[argc] = token;
     while (token != NULL){
-        token = strtok_r(NULL, " ", &_temp);
+        token = strtok_r(NULL, " ", &saveptr);
         argc++;
         argv[argc] = token;
     }
 	/* ------------------- */
 
 	/* Open executable file. */
-	file = filesys_open (temp);
+	file = filesys_open (process_name);
 	if (file == NULL) {
-		printf ("load: %s: open failed\n", temp);
+		printf ("load: %s: open failed\n", process_name);
 		goto done;
 	}
 
@@ -410,7 +408,7 @@ load (const char *file_name, struct intr_frame *if_) {
 			|| ehdr.e_version != 1
 			|| ehdr.e_phentsize != sizeof (struct Phdr)
 			|| ehdr.e_phnum > 1024) {
-		printf ("load: %s: error loading executable\n", temp);
+		printf ("load: %s: error loading executable\n", process_name);
 		goto done;
 	}
 
@@ -476,6 +474,7 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
+	 /*project2 argument_parsing*/
 	argument_stack(argv, argc, if_);
 	success = true;
 
