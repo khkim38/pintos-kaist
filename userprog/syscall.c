@@ -60,9 +60,9 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		case SYS_EXIT:
 			exit(f->R.rdi);
 			break;
-		// case SYS_FORK:
-		// 	f->R.rax = fork(f->R.rdi, f);
-		// 	break;
+		case SYS_FORK:
+			f->R.rax = fork(f->R.rdi, f);
+			break;
 		case SYS_EXEC:
 			//if (exec(f->R.rdi) == -1) exit(-1);
 			exec(f->R.rdi);
@@ -117,14 +117,15 @@ void halt(void){
 }
 
 void exit(int status){
-	thread_current()->exit = status;
+	struct thread *curr = thread_current();
+	curr->exit = status;
 	printf("%s: exit(%d)\n", thread_current()->name, status);
 	thread_exit();
 }
 
-// int fork(const char *thread_name, struct intr_frame *f){
-// 	return 0;
-// }
+int fork(const char *thread_name, struct intr_frame *f){
+	return process_fork(thread_name, f);
+}
 
 int exec(char *file_name) {
 	check_address(file_name);
