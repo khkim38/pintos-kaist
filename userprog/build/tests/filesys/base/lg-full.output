@@ -14,25 +14,13 @@ Putting 'lg-full' into the file system...
 Executing 'lg-full':
 (lg-full) begin
 (lg-full) create "quux"
-(lg-full) open "quux"
-Page fault at 0: not present error reading page in kernel context.
-Interrupt 0x0e (#PF Page-Fault Exception) at rip=800421d7ea
- cr2=0000000000000000 error=               0
-rax 0000000000000000 rbx 0000000000000000 rcx 0000000000000000 rdx 0000000000000000
-rsp 0000008004240ee0 rbp 0000008004240f10 rsi 0000000000000000 rdi 000000800423c038
-rip 000000800421d7ea r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
-r11 0000000000000216 r12 000000800421d29c r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000246
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x80042185fb 0x800421cfe7 0x800421d166 0x800420944b 0x8004209869 0x800421d3c3 0x800421d1db 0x400c61 0x400131 0x400e1a 0x400e63.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 159 ticks
-Thread: 32 idle ticks, 122 kernel ticks, 5 user ticks
+Execution of 'lg-full' complete.
+Timer: 602 ticks
+Thread: 33 idle ticks, 568 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 107 reads, 402 writes
+hd0:1: 84 reads, 321 writes
 hd1:0: 107 reads, 0 writes
-Console: 1784 characters output
-Key
+Console: 819 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

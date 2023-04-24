@@ -9,8 +9,13 @@
 #include "intrinsic.h"
 
 /* project2 system call */
+#include "threads/init.h"
 #include "filesys/file.h"
+#include "filesys/filesys.h"
 #include "userprog/process.h"
+#include "threads/palloc.h"
+#include "threads/vaddr.h"
+#include "threads/synch.h"
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
@@ -30,6 +35,7 @@ void syscall_handler (struct intr_frame *);
 
 void
 syscall_init (void) {
+	//struct lock filesys_lock;
 	write_msr(MSR_STAR, ((uint64_t)SEL_UCSEG - 0x10) << 48  |
 			((uint64_t)SEL_KCSEG) << 32);
 	write_msr(MSR_LSTAR, (uint64_t) syscall_entry);
@@ -39,6 +45,8 @@ syscall_init (void) {
 	 * mode stack. Therefore, we masked the FLAG_FL. */
 	write_msr(MSR_SYSCALL_MASK,
 			FLAG_IF | FLAG_TF | FLAG_DF | FLAG_IOPL | FLAG_AC | FLAG_NT);
+	
+	lock_init(&filesys_lock);
 }
 
 /* The main system call interface */
@@ -57,34 +65,35 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		// 	f->R.rax = fork(f->R.rdi, f);
 		// 	break;
 		case SYS_EXEC:
-			if (exec(f->R.rdi) == -1) exit(-1);
+			//if (exec(f->R.rdi) == -1) exit(-1);
+			exec(f->R.rdi);
 			break;
 		case SYS_WAIT:
-			f->R.rax = process_wait(f->R.rdi);
+			f->R.rax=process_wait(f->R.rdi);
 			break;
 		case SYS_CREATE:
-			f->R.rax = create(f->R.rdi, f->R.rsi);
+			f->R.rax = (uint64_t)create(f->R.rdi, f->R.rsi);
 			break;
 		case SYS_REMOVE:
-			f->R.rax = remove(f->R.rdi);
+			f->R.rax = (uint64_t)remove(f->R.rdi);
 			break;
 		case SYS_OPEN:
-			f->R.rax = open(f->R.rdi);
+			f->R.rax = (uint64_t)open(f->R.rdi);
 			break;
 		case SYS_FILESIZE:
-			f->R.rax = filesize(f->R.rdi);
+			f->R.rax = (uint64_t)filesize(f->R.rdi);
 			break;
 		case SYS_READ:
-			f->R.rax = read(f->R.rdi, f->R.rsi, f->R.rdx);
+			f->R.rax = (uint64_t)read(f->R.rdi, f->R.rsi, f->R.rdx);
 			break;
 		case SYS_WRITE:
-			f->R.rax = write(f->R.rdi, f->R.rsi, f->R.rdx);
+			f->R.rax = (uint64_t)write(f->R.rdi, f->R.rsi, f->R.rdx);
 			break;
 		case SYS_SEEK:
 			seek(f->R.rdi, f->R.rsi);
 			break;
 		case SYS_TELL:
-			f->R.rax = tell(f->R.rdi);
+			f->R.rax = (uint64_t)tell(f->R.rdi);
 			break;
 		case SYS_CLOSE:
 			close(f->R.rdi);
@@ -124,7 +133,7 @@ int exec(char *file_name) {
 	char *fn_copy = palloc_get_page(0);
 	if (fn_copy == NULL) exit(-1);
 	strlcpy(fn_copy, file_name, strlen(file_name)+1);
-	if (process_exec(fn_copy) == -1) return -1;
+	if (process_exec(fn_copy) == -1) exit(-1);
 
 	NOT_REACHED();
 	return 0;
@@ -226,8 +235,10 @@ void close(int fd){
 	struct thread *t=thread_current();
 	if (fd < 0) return ;
 	if(t->file_list[fd]==NULL) return ;
+	lock_acquire(&filesys_lock);
 	file_close(t->file_list[fd]);
 	t->file_list[fd]=NULL;
+	lock_release(&filesys_lock);
 }
 
 /* -------- */

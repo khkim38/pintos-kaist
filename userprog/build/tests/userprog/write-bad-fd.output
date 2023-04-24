@@ -4,7 +4,7 @@ Kernel command line: -q -f put write-bad-fd run write-bad-fd
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  157,081,600 loops/s.
+Calibrating timer...  104,243,200 loops/s.
 hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 103 sector (51 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -14,21 +14,21 @@ Putting 'write-bad-fd' into the file system...
 Executing 'write-bad-fd':
 (write-bad-fd) begin
 Page fault at 0x8091a10: not present error reading page in kernel context.
-Interrupt 0x0e (#PF Page-Fault Exception) at rip=800421da16
+Interrupt 0x0e (#PF Page-Fault Exception) at rip=800421da04
  cr2=0000000008091a10 error=               0
 rax 0000000008091a10 rbx 0000000000000000 rcx 0000008004246000 rdx 0000000008091a10
 rsp 0000008004240ef0 rbp 0000008004240f10 rsi 000000004747ff8f rdi 0000008004246000
-rip 000000800421da16 r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
-r11 0000000000000202 r12 000000800421d29c r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000202
+rip 000000800421da04 r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
+r11 0000000000000202 r12 000000800421d2b2 r13 0000800420958500 r14 00008004240f2000
+r15 0000200000000200 rflags 00000202
 es: 001b ds: 001b cs: 0008 ss: 0010
 Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x80042185fb 0x800421cfe7 0x800421d166 0x800420944b 0x8004209869 0x800421d465 0x800421d1db 0x400111 0x40021d 0x400cbe.
+Call stack: 0x80042185fb 0x800421cfe7 0x800421d166 0x800420944b 0x8004209869 0x800421d466 0x800421d1db 0x400111 0x40021d 0x400cbe.
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.
-Timer: 88 ticks
-Thread: 30 idle ticks, 55 kernel ticks, 3 user ticks
+Timer: 94 ticks
+Thread: 32 idle ticks, 58 kernel ticks, 4 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 80 reads, 234 writes
 hd1:0: 103 reads, 0 writes

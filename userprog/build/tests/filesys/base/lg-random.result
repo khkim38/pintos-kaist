@@ -1,21 +1,14 @@
 FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (lg-random) begin
-  (lg-random) create "bazzle"
-  (lg-random) open "bazzle"
-  (lg-random) write "bazzle" in random order
-  (lg-random) read "bazzle" in random order
-  (lg-random) close "bazzle"
-  (lg-random) end
-Differences in `diff -u' format:
-  (lg-random) begin
-  (lg-random) create "bazzle"
-- (lg-random) open "bazzle"
-- (lg-random) write "bazzle" in random order
-- (lg-random) read "bazzle" in random order
-- (lg-random) close "bazzle"
-- (lg-random) end
-
-(Process exit codes are excluded for matching purposes.)
+Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x80042185fb 0x800421cfe7 0x800421d166 0x800420944b 0x8004209869 0x800421d3c4 0x800421d1db 0x4001f5 0x401148 0x401191
+Translation of call stack:
+0x00000080042185fb: debug_panic (lib/kernel/debug.c:32)
+0x000000800421cfe7: kill (userprog/exception.c:103)
+0x000000800421d166: page_fault (userprog/exception.c:159 (discriminator 12))
+0x000000800420944b: intr_handler (threads/interrupt.c:352)
+0x0000008004209869: intr_entry (threads/intr-stubs.o:?)
+0x000000800421d3c4: syscall_handler (userprog/syscall.c:81)
+0x000000800421d1db: no_sti (userprog/syscall-entry.o:?)
+0x00000000004001f5: (unknown)
+0x0000000000401148: (unknown)
+0x0000000000401191: (unknown)

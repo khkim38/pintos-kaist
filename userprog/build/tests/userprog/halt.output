@@ -13,8 +13,8 @@ Boot complete.
 Putting 'halt' into the file system...
 Executing 'halt':
 (halt) begin
-Timer: 267 ticks
-Thread: 33 idle ticks, 234 kernel ticks, 0 user ticks
+Timer: 269 ticks
+Thread: 32 idle ticks, 237 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 80 reads, 232 writes
 hd1:0: 102 reads, 0 writes

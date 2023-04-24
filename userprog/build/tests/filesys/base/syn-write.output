@@ -17,8 +17,8 @@ Executing 'syn-write':
 (syn-write) create "stuff"
 syn-write: exit(-1)
 Execution of 'syn-write' complete.
-Timer: 604 ticks
-Thread: 34 idle ticks, 570 kernel ticks, 0 user ticks
+Timer: 624 ticks
+Thread: 37 idle ticks, 587 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 132 reads, 512 writes
 hd1:0: 226 reads, 0 writes

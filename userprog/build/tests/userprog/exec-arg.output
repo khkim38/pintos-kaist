@@ -4,7 +4,7 @@ Kernel command line: -q -f put exec-arg put child-args run exec-arg
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  157,081,600 loops/s.
+Calibrating timer...  153,804,800 loops/s.
 hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 204 sector (102 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -15,24 +15,20 @@ Putting 'child-args' into the file system...
 Executing 'exec-arg':
 (exec-arg) begin
 (exec-arg) I'm your father
-Page fault at 0x423f000: not present error writing page in kernel context.
-Interrupt 0x0e (#PF Page-Fault Exception) at rip=80042175a4
- cr2=000000000423f000 error=               2
-rax 000000000423f000 rbx 0000000000000000 rcx 000000000423f001 rdx 0000000000000063
-rsp 0000008004240e70 rbp 0000008004240ea0 rsi 0000000000404330 rdi 000000000423f000
-rip 00000080042175a4 r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
-r11 0000000000000212 r12 000000800421d29c r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000202
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x80042185fb 0x800421cfe7 0x800421d166 0x800420944b 0x8004209869 0x800421802e 0x800421d67a 0x800421d312 0x800421d1db 0x40011d 0x40017b 0x400c1c.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 266 ticks
-Thread: 34 idle ticks, 227 kernel ticks, 5 user ticks
+(args) begin
+(args) argc = 2
+(args) argv[0] = 'child-args'
+(args) argv[1] = 'childarg'
+(args) argv[2] = null
+(args) end
+exec-arg: exit(0)
+Execution of 'exec-arg' complete.
+Timer: 640 ticks
+Thread: 33 idle ticks, 607 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 106 reads, 446 writes
+hd0:1: 153 reads, 446 writes
 hd1:0: 204 reads, 0 writes
-Console: 1856 characters output
-Key
+Console: 1028 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
