@@ -35,7 +35,6 @@ void syscall_handler (struct intr_frame *);
 
 void
 syscall_init (void) {
-	//struct lock filesys_lock;
 	write_msr(MSR_STAR, ((uint64_t)SEL_UCSEG - 0x10) << 48  |
 			((uint64_t)SEL_KCSEG) << 32);
 	write_msr(MSR_LSTAR, (uint64_t) syscall_entry);
@@ -46,7 +45,7 @@ syscall_init (void) {
 	write_msr(MSR_SYSCALL_MASK,
 			FLAG_IF | FLAG_TF | FLAG_DF | FLAG_IOPL | FLAG_AC | FLAG_NT);
 	
-	lock_init(&filesys_lock);
+	lock_init(&file_lock);
 }
 
 /* The main system call interface */
@@ -151,9 +150,12 @@ int remove(const char *file) {
 
 int open(const char *file){
 	check_address(file);
-
+	bool lck=lock_held_by_current_thread(&file_lock);
+	if (lck) return -1;
 	struct thread *cur = thread_current();
+	lock_acquire(&file_lock);
 	struct file *file_obj = filesys_open(file);
+	lock_release(&file_lock);
 	if (file_obj == NULL) return -1;
 
 	int fd_idx = cur->fd_idx;
@@ -179,6 +181,7 @@ int filesize(int fd){
 /*jhy*/
 int read(int fd, void *buffer, unsigned size){
 	check_address(buffer);
+	check_address(buffer+size-1);
 	int read_out;
 	if (fd==0){
 		for (int i=0;i<size;i++){
@@ -191,7 +194,9 @@ int read(int fd, void *buffer, unsigned size){
 		struct thread *curr=thread_current();
 		if (fd<0) return -1;
 		if (curr->file_list[fd]==NULL) return -1;
+		lock_acquire(&file_lock);
 		read_out=file_read(curr->file_list[fd],buffer,size);
+		lock_release(&file_lock);
 	}
 	//printf("%s", buffer);
 	return read_out;
@@ -200,6 +205,7 @@ int read(int fd, void *buffer, unsigned size){
 /*jh*/
 int write(int fd, const void *buffer, unsigned size){
 	check_address(buffer);
+	check_address(buffer+size-1);
 	int write_out;
 	if (fd==1){
 		putbuf(buffer,size);
@@ -210,7 +216,9 @@ int write(int fd, const void *buffer, unsigned size){
 		struct thread *curr=thread_current();
 		if (fd<0) return -1;
 		if (curr->file_list[fd]==NULL) return -1;
+		lock_acquire(&file_lock);
 		write_out=file_write(curr->file_list[fd],buffer,size);
+		lock_release(&file_lock);
 	}
 	//printf("%s", buffer);
 	return write_out;
@@ -235,10 +243,10 @@ void close(int fd){
 	struct thread *t=thread_current();
 	if (fd < 0) return ;
 	if(t->file_list[fd]==NULL) return ;
-	lock_acquire(&filesys_lock);
+	lock_acquire(&file_lock);
 	file_close(t->file_list[fd]);
 	t->file_list[fd]=NULL;
-	lock_release(&filesys_lock);
+	lock_release(&file_lock);
 }
 
 /* -------- */

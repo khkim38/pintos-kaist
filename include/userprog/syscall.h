@@ -3,7 +3,7 @@
 
 /*project2*/
 #include "threads/synch.h"
-struct lock filesys_lock;
+struct lock file_lock;
 void syscall_init (void);
 
 void check_address(void *addr);

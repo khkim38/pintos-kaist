@@ -4,7 +4,7 @@ Kernel command line: -q -f put bad-read run bad-read
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  150,937,600 loops/s.
+Calibrating timer...  153,804,800 loops/s.
 hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 103 sector (51 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -24,8 +24,8 @@ r11 0000000000000206 r12 0000000000000000 r13 0000800420958500 r14 00008004240f2
 r15 0000200000000200 rflags 00000212
 es: 001b ds: 001b cs: 0023 ss: 001b
 Execution of 'bad-read' complete.
-Timer: 629 ticks
-Thread: 32 idle ticks, 596 kernel ticks, 1 user ticks
+Timer: 645 ticks
+Thread: 30 idle ticks, 614 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 80 reads, 234 writes
 hd1:0: 103 reads, 0 writes

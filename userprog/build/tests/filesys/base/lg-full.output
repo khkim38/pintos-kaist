@@ -15,10 +15,10 @@ Executing 'lg-full':
 (lg-full) begin
 (lg-full) create "quux"
 Execution of 'lg-full' complete.
-Timer: 602 ticks
-Thread: 33 idle ticks, 568 kernel ticks, 1 user ticks
+Timer: 644 ticks
+Thread: 32 idle ticks, 611 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 84 reads, 321 writes
+hd0:1: 84 reads, 331 writes
 hd1:0: 107 reads, 0 writes
 Console: 819 characters output
 Keyboard: 0 keys pressed
