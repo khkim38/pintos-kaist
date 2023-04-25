@@ -4,7 +4,7 @@ Kernel command line: -q -f put rox-child put child-rox run rox-child
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  153,804,800 loops/s.
+Calibrating timer...  105,062,400 loops/s.
 hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 220 sector (110 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -16,11 +16,11 @@ Executing 'rox-child':
 (rox-child) begin
 (rox-child) open "child-rox"
 Page fault at 0: not present error reading page in kernel context.
-Interrupt 0x0e (#PF Page-Fault Exception) at rip=800421d82d
+Interrupt 0x0e (#PF Page-Fault Exception) at rip=800421d85f
  cr2=0000000000000000 error=               0
 rax 0000000000000000 rbx 0000000000000000 rcx 0000000000000000 rdx 0000000000000000
 rsp 0000008004240ee0 rbp 0000008004240f10 rsi 000000800422a8e0 rdi 0000000000000001
-rip 000000800421d82d r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
+rip 000000800421d85f r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
 r11 0000000000000216 r12 000000800421d2b2 r13 0000000000000000 r14 0000000000000000
 r15 0000000000000000 rflags 00000246
 es: 001b ds: 001b cs: 0008 ss: 0010
@@ -29,8 +29,8 @@ Call stack: 0x80042185fb 0x800421cfe7 0x800421d166 0x800420944b 0x8004209869 0x8
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.
-Timer: 298 ticks
-Thread: 36 idle ticks, 258 kernel ticks, 4 user ticks
+Timer: 247 ticks
+Thread: 30 idle ticks, 211 kernel ticks, 6 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 112 reads, 478 writes
 hd1:0: 220 reads, 0 writes

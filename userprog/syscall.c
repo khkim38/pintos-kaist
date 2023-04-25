@@ -108,7 +108,7 @@ syscall_handler (struct intr_frame *f UNUSED) {
 void check_address(void *addr) {
 	struct thread *cur = thread_current();
 	if (addr == NULL) exit(-1);
-	if (!(is_user_vaddr(addr))) exit(-1);
+	if (is_kernel_vaddr(addr)) exit(-1);
 	if (pml4_get_page(cur->pml4, addr) == NULL) exit(-1);
 }
 
@@ -160,8 +160,10 @@ int open(const char *file){
 
 	int fd_idx = cur->fd_idx;
 	while (cur->file_list[fd_idx] != NULL){
-		if (fd_idx > 100) {
+		if (fd_idx >= 1536) {
+			lock_acquire(&file_lock);
 			file_close(file_obj);
+			lock_release(&file_lock);
 			return -1;
 		}
 		fd_idx += 1;

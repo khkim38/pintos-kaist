@@ -10,7 +10,7 @@ pass tests/userprog/create-empty
 pass tests/userprog/create-null
 pass tests/userprog/create-bad-ptr
 pass tests/userprog/create-long
-pass tests/userprog/create-exists
+FAIL tests/userprog/create-exists
 pass tests/userprog/create-bound
 FAIL tests/userprog/open-normal
 pass tests/userprog/open-missing
@@ -49,7 +49,7 @@ FAIL tests/userprog/exec-read
 FAIL tests/userprog/wait-simple
 FAIL tests/userprog/wait-twice
 FAIL tests/userprog/wait-killed
-pass tests/userprog/wait-bad-pid
+FAIL tests/userprog/wait-bad-pid
 FAIL tests/userprog/multi-recurse
 FAIL tests/userprog/multi-child-fd
 FAIL tests/userprog/rox-simple
