@@ -184,14 +184,16 @@ __do_fork (void *aux) {
 	 * TODO:       from the fork() until this function successfully duplicates
 	 * TODO:       the resources of parent.*/
 	
-	// for(int i = 0; i < 128; i++){
-	// 	if (parent->file_list[i] != NULL){
-	// 		if (i == 0 || i == 1)
-	// 			current->file_list[i] = parent->file_list[i];
-	// 		else
-	// 			current->file_list[i] = file_duplicate(parent->file_list[i]);
-	// 	}
-	// }
+	for(int i = 2; i < 128; i++){
+		if (parent->file_list[i] != NULL){
+			if (i == 0 || i == 1)
+				current->file_list[i] = parent->file_list[i];
+			else
+				current->file_list[i] = file_duplicate(parent->file_list[i]);
+		}
+	}
+	current->file_list[0] = parent->file_list[0];
+	current->file_list[1] = parent->file_list[1];
 	
 	
 	current->fd_idx = parent->fd_idx;
@@ -285,12 +287,23 @@ process_exit (void) {
 	 * TODO: Implement process termination message (see
 	 * TODO: project2/process_termination.html).
 	 * TODO: We recommend you to implement process resource cleanup here. */
+<<<<<<< HEAD
 	//palloc_free_multiple(curr->file_list, 3);
 	//for (int i = 0; i < 1536; i++) {
 	//	if (curr->file_list[i] == NULL) continue;
 	//	file_close(curr->file_list[i]);
 	//}
 	
+=======
+
+	// for (int i = 0; i < 128; i++) {
+	// 	if (curr->file_list[i] == NULL) continue;
+	// 	file_close(curr->file_list[i]);
+	// }
+	// palloc_free_multiple(curr->file_list, 0);
+	
+
+>>>>>>> 67fcdabcff649fc2aceb3869a496fac9a06d626a
 	sema_up(&curr->wait_semaphore);
 	sema_down(&curr->free_semaphore);
 

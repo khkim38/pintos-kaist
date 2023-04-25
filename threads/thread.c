@@ -218,6 +218,14 @@ thread_create (const char *name, int priority,
 	/* Add to run queue. */
 	thread_unblock (t);
 
+	/* project2 systemcall file table */
+	t->file_list = palloc_get_multiple(PAL_ZERO, 128);
+	if (t->file_list == NULL)
+		return TID_ERROR;
+	t->fd_idx = 2;
+	t->file_list[0] = 1;
+	t->file_list[1] = 2;
+
 	/* project1 priority */
 	/* 현재 실행되는 쓰레드의 piority가 새로 만들어진 쓰레드의 priority 작으면 yield*/
 	if (thread_current()->priority < t->priority) 
@@ -481,6 +489,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	sema_init(&t->free_semaphore, 0);
 	list_init(&t->child_list);
 	list_push_back(&running_thread()->child_list, &t->child_elem);
+	
 	/* ------------------- */
 
 	/* project1 donation */

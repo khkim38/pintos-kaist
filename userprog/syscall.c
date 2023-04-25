@@ -164,6 +164,7 @@ int open(const char *file){
 	struct file *file_obj = filesys_open(file);
 	lock_release(&file_lock);
 	if (file_obj == NULL) return -1;
+<<<<<<< HEAD
 	/*
 	int fd_idx = cur->fd_idx;
 	while (cur->file_list[fd_idx] != NULL){
@@ -173,9 +174,21 @@ int open(const char *file){
 			//lock_release(&file_lock);
 			return -1;
 		}
+=======
+
+	int fd_idx = -1;
+	for (fd_idx = 0; fd_idx < 128; fd_idx++){
+		if (cur->file_list[fd_idx] == NULL)
+			break;
+>>>>>>> 67fcdabcff649fc2aceb3869a496fac9a06d626a
 		fd_idx += 1;
 	}
+	if (fd_idx >= 128) {
+		file_close(file_obj);
+		return -1;
+	}
 	cur->fd_idx = fd_idx;
+<<<<<<< HEAD
 	cur->file_list[fd_idx] = file;
 	return cur->fd_idx;
 	*/
@@ -189,6 +202,11 @@ int open(const char *file){
 	file_close(file_obj);
 	lock_release(&file_lock);
 	return -1;
+=======
+	cur->file_list[fd_idx] = file_obj;
+
+	return fd_idx;
+>>>>>>> 67fcdabcff649fc2aceb3869a496fac9a06d626a
 }
 
 int filesize(int fd){
@@ -207,7 +225,7 @@ int read(int fd, void *buffer, unsigned size){
 			((char*)buffer)[i]=input_getc();
 		}
 		read_out=size;
-	} else if (fd<2){
+	} else if (fd < 2){
 		return -1;
 	} else {
 		struct thread *curr=thread_current();
@@ -217,9 +235,7 @@ int read(int fd, void *buffer, unsigned size){
 		read_out=file_read(curr->file_list[fd],buffer,size);
 		lock_release(&file_lock);
 	}
-	//printf("%s", buffer);
 	return read_out;
-
 }
 /*jh*/
 int write(int fd, const void *buffer, unsigned size){
