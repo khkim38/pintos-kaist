@@ -151,24 +151,26 @@ int remove(const char *file) {
 
 int open(const char *file){
 	check_address(file);
-	bool lck=lock_held_by_current_thread(&file_lock);
-	if (lck) return -1;
+	// bool lck=lock_held_by_current_thread(&file_lock);
+	// if (lck) return -1;
 	struct thread *cur = thread_current();
 	lock_acquire(&file_lock);
 	struct file *file_obj = filesys_open(file);
 	lock_release(&file_lock);
 	if (file_obj == NULL) return -1;
 
-	int fd_idx = cur->fd_idx;
-	while (cur->file_list[fd_idx] != NULL){
-		if (fd_idx > 100) {
-			file_close(file_obj);
-			return -1;
-		}
+	int fd_idx = -1;
+	for (fd_idx = 0; fd_idx < 128; fd_idx++){
+		if (cur->file_list[fd_idx] == NULL)
+			break;
 		fd_idx += 1;
 	}
+	if (fd_idx >= 128) {
+		file_close(file_obj);
+		return -1;
+	}
 	cur->fd_idx = fd_idx;
-	cur->file_list[fd_idx] = file;
+	cur->file_list[fd_idx] = file_obj;
 
 	return fd_idx;
 }
@@ -189,7 +191,7 @@ int read(int fd, void *buffer, unsigned size){
 			((char*)buffer)[i]=input_getc();
 		}
 		read_out=size;
-	} else if (fd<2){
+	} else if (fd < 2){
 		return -1;
 	} else {
 		struct thread *curr=thread_current();
@@ -199,9 +201,7 @@ int read(int fd, void *buffer, unsigned size){
 		read_out=file_read(curr->file_list[fd],buffer,size);
 		lock_release(&file_lock);
 	}
-	//printf("%s", buffer);
 	return read_out;
-
 }
 /*jh*/
 int write(int fd, const void *buffer, unsigned size){
