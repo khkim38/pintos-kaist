@@ -60,9 +60,9 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		case SYS_EXIT:
 			exit(f->R.rdi);
 			break;
-		// case SYS_FORK:
-		// 	f->R.rax = fork(f->R.rdi, f);
-		// 	break;
+		case SYS_FORK:
+			f->R.rax = fork(f->R.rdi, f);
+			break;
 		case SYS_EXEC:
 			//if (exec(f->R.rdi) == -1) exit(-1);
 			exec(f->R.rdi);
@@ -117,22 +117,29 @@ void halt(void){
 }
 
 void exit(int status){
-	thread_current()->exit = status;
+	struct thread *curr = thread_current();
+	curr->exit = status;
 	printf("%s: exit(%d)\n", thread_current()->name, status);
 	thread_exit();
 }
 
-// int fork(const char *thread_name, struct intr_frame *f){
-// 	return 0;
-// }
+int fork(const char *thread_name, struct intr_frame *f){
+	return process_fork(thread_name, f);
+}
 
 int exec(char *file_name) {
 	check_address(file_name);
 
 	char *fn_copy = palloc_get_page(0);
-	if (fn_copy == NULL) exit(-1);
+	if (fn_copy == NULL) {
+		exit(-1);
+		return -1;
+		}
 	strlcpy(fn_copy, file_name, strlen(file_name)+1);
-	if (process_exec(fn_copy) == -1) exit(-1);
+	if (process_exec(fn_copy) == -1) {
+		exit(-1);
+		return -1;
+		}
 
 	NOT_REACHED();
 	return 0;
@@ -150,28 +157,38 @@ int remove(const char *file) {
 
 int open(const char *file){
 	check_address(file);
-	bool lck=lock_held_by_current_thread(&file_lock);
-	if (lck) return -1;
+	// bool lck=lock_held_by_current_thread(&file_lock);
+	// if (lck) return -1;
 	struct thread *cur = thread_current();
 	lock_acquire(&file_lock);
 	struct file *file_obj = filesys_open(file);
 	lock_release(&file_lock);
 	if (file_obj == NULL) return -1;
-
+	/*
 	int fd_idx = cur->fd_idx;
 	while (cur->file_list[fd_idx] != NULL){
-		if (fd_idx >= 1536) {
-			lock_acquire(&file_lock);
-			file_close(file_obj);
-			lock_release(&file_lock);
+		if (fd_idx >= 128) {
+			//lock_acquire(&file_lock);
+			//file_close(file_obj);
+			//lock_release(&file_lock);
 			return -1;
 		}
 		fd_idx += 1;
 	}
 	cur->fd_idx = fd_idx;
 	cur->file_list[fd_idx] = file;
-
-	return fd_idx;
+	return cur->fd_idx;
+	*/
+	for (int i=2; i<128; i++){
+		if(!cur->file_list[i]){
+			cur->file_list[i]=file_obj;
+			return i;
+		}
+	}
+	lock_acquire(&file_lock);
+	file_close(file_obj);
+	lock_release(&file_lock);
+	return -1;
 }
 
 int filesize(int fd){

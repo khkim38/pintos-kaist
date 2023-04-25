@@ -5,6 +5,7 @@
 #include <list.h>
 #include <stdint.h>
 #include "threads/interrupt.h"
+#include "threads/synch.h"
 #ifdef VM
 #include "vm/vm.h"
 #endif
@@ -102,6 +103,12 @@ struct thread {
 	/* project2 system call */
 	int fd_idx;
 	struct file **file_list;
+	struct semaphore fork_semaphore;
+	struct semaphore wait_semaphore;
+	struct semaphore free_semaphore;
+	struct list child_list;
+	struct list_elem child_elem;
+	struct intr_frame parent_if_;
 	/* -------------------- */
 
 	/* project1 alarm clock */

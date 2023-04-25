@@ -476,6 +476,11 @@ init_thread (struct thread *t, const char *name, int priority) {
 
 	/* project2 systemcall */
 	t->exit = 0;
+	sema_init(&t->fork_semaphore, 0);
+	sema_init(&t->wait_semaphore, 0);
+	sema_init(&t->free_semaphore, 0);
+	list_init(&t->child_list);
+	list_push_back(&running_thread()->child_list, &t->child_elem);
 	/* ------------------- */
 
 	/* project1 donation */
