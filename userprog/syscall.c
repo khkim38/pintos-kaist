@@ -164,23 +164,11 @@ int open(const char *file){
 	struct file *file_obj = filesys_open(file);
 	lock_release(&file_lock);
 	if (file_obj == NULL) return -1;
-<<<<<<< HEAD
-	/*
-	int fd_idx = cur->fd_idx;
-	while (cur->file_list[fd_idx] != NULL){
-		if (fd_idx >= 128) {
-			//lock_acquire(&file_lock);
-			//file_close(file_obj);
-			//lock_release(&file_lock);
-			return -1;
-		}
-=======
 
 	int fd_idx = -1;
 	for (fd_idx = 0; fd_idx < 128; fd_idx++){
 		if (cur->file_list[fd_idx] == NULL)
 			break;
->>>>>>> 67fcdabcff649fc2aceb3869a496fac9a06d626a
 		fd_idx += 1;
 	}
 	if (fd_idx >= 128) {
@@ -188,25 +176,9 @@ int open(const char *file){
 		return -1;
 	}
 	cur->fd_idx = fd_idx;
-<<<<<<< HEAD
-	cur->file_list[fd_idx] = file;
-	return cur->fd_idx;
-	*/
-	for (int i=2; i<128; i++){
-		if(!cur->file_list[i]){
-			cur->file_list[i]=file_obj;
-			return i;
-		}
-	}
-	lock_acquire(&file_lock);
-	file_close(file_obj);
-	lock_release(&file_lock);
-	return -1;
-=======
 	cur->file_list[fd_idx] = file_obj;
 
 	return fd_idx;
->>>>>>> 67fcdabcff649fc2aceb3869a496fac9a06d626a
 }
 
 int filesize(int fd){
