@@ -108,7 +108,7 @@ syscall_handler (struct intr_frame *f UNUSED) {
 void check_address(void *addr) {
 	struct thread *cur = thread_current();
 	if (addr == NULL) exit(-1);
-	if (is_kernel_vaddr(addr)) exit(-1);
+	if (!(is_user_vaddr(addr))) exit(-1);
 	if (pml4_get_page(cur->pml4, addr) == NULL) exit(-1);
 }
 
@@ -131,15 +131,9 @@ int exec(char *file_name) {
 	check_address(file_name);
 
 	char *fn_copy = palloc_get_page(0);
-	if (fn_copy == NULL) {
-		exit(-1);
-		return -1;
-		}
+	if (fn_copy == NULL) exit(-1);
 	strlcpy(fn_copy, file_name, strlen(file_name)+1);
-	if (process_exec(fn_copy) == -1) {
-		exit(-1);
-		return -1;
-		}
+	if (process_exec(fn_copy) == -1) exit(-1);
 
 	NOT_REACHED();
 	return 0;
