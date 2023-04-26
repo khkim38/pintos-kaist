@@ -288,17 +288,11 @@ process_exit (void) {
 	 * TODO: project2/process_termination.html).
 	 * TODO: We recommend you to implement process resource cleanup here. */
 
-	// for (int i = 0; i < 128; i++) {
-	// 	if (curr->file_list[i] == NULL) continue;
-	// 	file_close(curr->file_list[i]);
-	// }
-	// palloc_free_multiple(curr->file_list, 0);
-	
-
+	/* project 2 systemcall exit */
+	process_cleanup ();
 	sema_up(&curr->wait_semaphore);
 	sema_down(&curr->free_semaphore);
-
-	process_cleanup ();
+	// process_cleanup ();
 }
 
 /* Free the current process's resources. */

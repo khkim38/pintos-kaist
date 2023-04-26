@@ -151,13 +151,17 @@ int remove(const char *file) {
 
 int open(const char *file){
 	check_address(file);
-	// bool lck=lock_held_by_current_thread(&file_lock);
-	// if (lck) return -1;
+
 	struct thread *cur = thread_current();
 	lock_acquire(&file_lock);
 	struct file *file_obj = filesys_open(file);
 	lock_release(&file_lock);
 	if (file_obj == NULL) return -1;
+
+	/* project2 syscall rox */
+	if(strcmp(file, thread_name()) == 0)
+		file_deny_write(file_obj);
+	/* --------------------- */
 
 	int fd_idx = -1;
 	for (fd_idx = 0; fd_idx < 128; fd_idx++){
