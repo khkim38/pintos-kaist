@@ -15,28 +15,6 @@ Executing 'mlfqs-fair-20':
 (mlfqs-fair-20) Thread 1 received 153 ticks.
 (mlfqs-fair-20) Thread 2 received 152 ticks.
 (mlfqs-fair-20) Thread 3 received 152 ticks.
-<<<<<<< HEAD
-(mlfqs-fair-20) Thread 4 received 152 ticks.
-(mlfqs-fair-20) Thread 5 received 149 ticks.
-(mlfqs-fair-20) Thread 6 received 149 ticks.
-(mlfqs-fair-20) Thread 7 received 149 ticks.
-(mlfqs-fair-20) Thread 8 received 148 ticks.
-(mlfqs-fair-20) Thread 9 received 149 ticks.
-(mlfqs-fair-20) Thread 10 received 152 ticks.
-(mlfqs-fair-20) Thread 11 received 153 ticks.
-(mlfqs-fair-20) Thread 12 received 152 ticks.
-(mlfqs-fair-20) Thread 13 received 152 ticks.
-(mlfqs-fair-20) Thread 14 received 152 ticks.
-(mlfqs-fair-20) Thread 15 received 149 ticks.
-(mlfqs-fair-20) Thread 16 received 148 ticks.
-(mlfqs-fair-20) Thread 17 received 148 ticks.
-(mlfqs-fair-20) Thread 18 received 148 ticks.
-(mlfqs-fair-20) Thread 19 received 148 ticks.
-(mlfqs-fair-20) end
-Execution of 'mlfqs-fair-20' complete.
-Timer: 4045 ticks
-Thread: 1000 idle ticks, 3045 kernel ticks, 0 user ticks
-=======
 (mlfqs-fair-20) Thread 4 received 148 ticks.
 (mlfqs-fair-20) Thread 5 received 152 ticks.
 (mlfqs-fair-20) Thread 6 received 152 ticks.
@@ -57,7 +35,6 @@ Thread: 1000 idle ticks, 3045 kernel ticks, 0 user ticks
 Execution of 'mlfqs-fair-20' complete.
 Timer: 4050 ticks
 Thread: 1000 idle ticks, 3050 kernel ticks, 0 user ticks
->>>>>>> a086208f7b1529246493003aec3ae3220c8b68b3
 Console: 1503 characters output
 Keyboard: 0 keys pressed
 Powering off...

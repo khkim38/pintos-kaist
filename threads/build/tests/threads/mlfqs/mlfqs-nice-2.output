@@ -11,21 +11,12 @@ Executing 'mlfqs-nice-2':
 (mlfqs-nice-2) Starting 2 threads...
 (mlfqs-nice-2) Starting threads took 0 ticks.
 (mlfqs-nice-2) Sleeping 40 seconds to let threads run, please wait...
-<<<<<<< HEAD
-(mlfqs-nice-2) Thread 0 received 1928 ticks.
-(mlfqs-nice-2) Thread 1 received 1073 ticks.
-(mlfqs-nice-2) end
-Execution of 'mlfqs-nice-2' complete.
-Timer: 4042 ticks
-Thread: 1000 idle ticks, 3042 kernel ticks, 0 user ticks
-=======
 (mlfqs-nice-2) Thread 0 received 1933 ticks.
 (mlfqs-nice-2) Thread 1 received 1068 ticks.
 (mlfqs-nice-2) end
 Execution of 'mlfqs-nice-2' complete.
 Timer: 4038 ticks
 Thread: 1000 idle ticks, 3038 kernel ticks, 0 user ticks
->>>>>>> a086208f7b1529246493003aec3ae3220c8b68b3
 Console: 674 characters output
 Keyboard: 0 keys pressed
 Powering off...
