@@ -141,7 +141,7 @@ page_fault (struct intr_frame *f) {
 	user = (f->error_code & PF_U) != 0;
 
 	/* project2 systemcall */
-	if(!user || is_kernel_vaddr(fault_addr) || not_present) exit(-1);
+	// if(!user || is_kernel_vaddr(fault_addr) || not_present) exit(-1);
 
 #ifdef VM
 	/* For project 3 and later. */

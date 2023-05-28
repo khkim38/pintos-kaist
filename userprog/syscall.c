@@ -16,6 +16,7 @@
 #include "threads/palloc.h"
 #include "threads/vaddr.h"
 #include "threads/synch.h"
+#include "vm/vm.h"
 
 void syscall_entry(void);
 void syscall_handler(struct intr_frame *);
@@ -54,6 +55,7 @@ void syscall_init(void)
 void syscall_handler(struct intr_frame *f UNUSED)
 {
 	// TODO: Your implementation goes here.
+	thread_current()->rsp_stack = f->rsp;
 	/* project2 */
 	switch (f->R.rax)
 	{
@@ -67,6 +69,7 @@ void syscall_handler(struct intr_frame *f UNUSED)
 		f->R.rax = fork(f->R.rdi, f);
 		break;
 	case SYS_EXEC:
+		check_address(f->R.rdi);
 		if (exec(f->R.rdi) == -1)
 			exit(-1);
 		// exec(f->R.rdi);
@@ -75,21 +78,26 @@ void syscall_handler(struct intr_frame *f UNUSED)
 		f->R.rax = process_wait(f->R.rdi);
 		break;
 	case SYS_CREATE:
+		check_address(f->R.rdi);
 		f->R.rax = (uint64_t)create(f->R.rdi, f->R.rsi);
 		break;
 	case SYS_REMOVE:
+		check_address(f->R.rdi);
 		f->R.rax = (uint64_t)remove(f->R.rdi);
 		break;
 	case SYS_OPEN:
+		check_address(f->R.rdi);
 		f->R.rax = (uint64_t)open(f->R.rdi);
 		break;
 	case SYS_FILESIZE:
 		f->R.rax = (uint64_t)filesize(f->R.rdi);
 		break;
 	case SYS_READ:
+		check_valid_buffer(f->R.rsi, f->R.rdx, f->rsp, 1);
 		f->R.rax = (uint64_t)read(f->R.rdi, f->R.rsi, f->R.rdx);
 		break;
 	case SYS_WRITE:
+		check_valid_buffer(f->R.rsi, f->R.rdx, f->rsp, 0);
 		f->R.rax = (uint64_t)write(f->R.rdi, f->R.rsi, f->R.rdx);
 		break;
 	case SYS_SEEK:
@@ -101,6 +109,13 @@ void syscall_handler(struct intr_frame *f UNUSED)
 	case SYS_CLOSE:
 		close(f->R.rdi);
 		break;
+	case SYS_MMAP:
+		f->R.rax = mmap(f->R.rdi, f->R.rsi, f->R.rdx, f->R.r10, f->R.r8);
+		break;
+	case SYS_MUNMAP:
+		check_address(f->R.rdi);
+		munmap(f->R.rdi);
+		break;
 	default:
 		exit(-1);
 		break;
@@ -108,16 +123,25 @@ void syscall_handler(struct intr_frame *f UNUSED)
 	/* -------- */
 }
 
-/* project2 */
-void check_address(void *addr)
-{
-	struct thread *cur = thread_current();
-	if (addr == NULL)
-		exit(-1);
-	if (!(is_user_vaddr(addr)))
-		exit(-1);
-	if (pml4_get_page(cur->pml4, addr) == NULL)
-		exit(-1);
+/* project3 Anonymous Page */
+
+struct page * check_address(void *addr){
+	if(is_kernel_vaddr(addr)) exit(-1);
+	
+	return spt_find_page(&thread_current()->spt, addr);
+}
+
+void check_valid_buffer(void* buffer, unsigned size, void* rsp, bool to_write){
+	struct page* page;
+
+	if(buffer <= USER_STACK && buffer >= rsp) return;
+
+	for(int i=0; i<size; i++){
+		page = check_address(buffer+i);
+		if(page == NULL) exit(-1);
+		// if(to_write && !page->writable) exit(-1);
+		if(to_write == true && page->writable == false) exit(-1);
+	}
 }
 
 void halt(void)
@@ -140,7 +164,7 @@ int fork(const char *thread_name, struct intr_frame *f)
 
 int exec(char *file_name)
 {
-	check_address(file_name);
+	// check_address(file_name);
 
 	char *fn_copy = palloc_get_page(PAL_ZERO);
 	tid_t tid;
@@ -172,19 +196,19 @@ int exec(char *file_name)
 
 int create(const char *file, unsigned initial_size)
 {
-	check_address(file);
+	// check_address(file);
 	return filesys_create(file, initial_size);
 }
 
 int remove(const char *file)
 {
-	check_address(file);
+	// check_address(file);
 	return filesys_remove(file);
 }
 
 int open(const char *file)
 {
-	check_address(file);
+	// check_address(file);
 
 	struct thread *cur = thread_current();
 	lock_acquire(&file_lock);
@@ -230,7 +254,7 @@ int filesize(int fd)
 /*jhy*/
 int read(int fd, void *buffer, unsigned size)
 {
-	check_address(buffer);
+	// check_address(buffer);
 	// check_address(buffer+size);
 	int read_out;
 	if (fd == 0)
@@ -261,7 +285,7 @@ int read(int fd, void *buffer, unsigned size)
 /*jh*/
 int write(int fd, const void *buffer, unsigned size)
 {
-	check_address(buffer);
+	// check_address(buffer);
 	// check_address(buffer+size);
 	int write_out;
 	if (fd == 1)
@@ -286,7 +310,6 @@ int write(int fd, const void *buffer, unsigned size)
 		// file_deny_write(curr->file_list[fd]);
 		lock_release(&file_lock);
 	}
-	// printf("%s", buffer);
 	return write_out;
 }
 
@@ -328,3 +351,33 @@ void close(int fd)
 }
 
 /* -------- */
+
+void *mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
+
+    if (offset % PGSIZE != 0) {
+        return NULL;
+    }
+
+    if (pg_round_down(addr) != addr || is_kernel_vaddr(addr) || addr == NULL || (long long)length <= 0)
+        return NULL;
+    
+    if (fd == 0 || fd == 1)
+        exit(-1);
+    
+    // vm_overlap
+    if (spt_find_page(&thread_current()->spt, addr))
+        return NULL;
+
+    struct file *target = thread_current()->file_list[fd];
+
+    if (target == NULL)
+        return NULL;
+
+    void * ret = do_mmap(addr, length, writable, target, offset);
+
+    return ret;
+}
+
+void munmap (void *addr) {
+    do_munmap(addr);
+}

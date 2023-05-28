@@ -3,9 +3,11 @@
 
 /*project2*/
 #include "threads/synch.h"
+#include "filesys/off_t.h"
+
 void syscall_init (void);
 
-void check_address(void *addr);
+struct page * check_address(void *addr);
 // void directory_to_file(int file);
 
 void halt(void);
@@ -23,5 +25,7 @@ void seek(int fd, unsigned position);
 unsigned tell(int fd);
 void close(int fd);
 /* -------- */
+void *mmap (void *addr, size_t length, int writable, int fd, off_t offset);
+void munmap (void *addr);
 
 #endif /* userprog/syscall.h */
