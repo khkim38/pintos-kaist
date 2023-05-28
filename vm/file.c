@@ -1,9 +1,12 @@
 /* file.c: Implementation of memory backed file object (mmaped object). */
 
 #include "vm/vm.h"
+
+/* project3 Mmap */
 #include "userprog/process.h"
 #include "threads/vaddr.h"
 #include "threads/mmu.h"
+/* ------------- */
 
 static bool file_backed_swap_in (struct page *page, void *kva);
 static bool file_backed_swap_out (struct page *page);
@@ -49,7 +52,7 @@ file_backed_destroy (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
 }
 
-/* Do the mmap */
+/* project3 Mmap */
 static bool lazy_load_mmap(struct page *page, void *aux)
 {
 	struct container *container = (struct container *)aux;
@@ -68,10 +71,12 @@ static bool lazy_load_mmap(struct page *page, void *aux)
 
 	return true;
 }
+/* ------------- */
 
 void *
 do_mmap (void *addr, size_t length, int writable,
 		struct file *file, off_t offset) {
+	/* project3 Mmap */
 	void * ori_addr = addr;
     size_t read_bytes = length > file_length(file) ? file_length(file) : length;
     size_t zero_bytes = PGSIZE - read_bytes % PGSIZE;
@@ -94,6 +99,7 @@ do_mmap (void *addr, size_t length, int writable,
 		offset     += page_read_bytes;
 	}
 	return ori_addr;
+	/* ------------- */
 }
 
 /* Do the munmap */

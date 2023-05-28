@@ -127,6 +127,7 @@ void syscall_handler(struct intr_frame *f UNUSED)
 	case SYS_CLOSE:
 		close(f->R.rdi);
 		break;
+	/* project3 Mmap */
 	case SYS_MMAP:
 		f->R.rax = mmap(f->R.rdi, f->R.rsi, f->R.rdx, f->R.r10, f->R.r8);
 		break;
@@ -134,11 +135,11 @@ void syscall_handler(struct intr_frame *f UNUSED)
 		check_address(f->R.rdi);
 		munmap(f->R.rdi);
 		break;
+	/* ------------- */
 	default:
 		exit(-1);
 		break;
 	}
-	/* -------- */
 }
 
 /* project3 Anonymous Page: check buffer */
@@ -371,6 +372,7 @@ void close(int fd)
 
 /* -------- */
 
+/* project3 Mmap */
 void *mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
 
     if (offset % PGSIZE != 0) {
@@ -400,3 +402,4 @@ void *mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
 void munmap (void *addr) {
     do_munmap(addr);
 }
+/* ------------- */

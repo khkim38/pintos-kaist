@@ -3,7 +3,9 @@
 
 /*project2*/
 #include "threads/synch.h"
+/* project3 Mmap */
 #include "filesys/off_t.h"
+/* ------------- */
 
 void syscall_init (void);
 
@@ -27,7 +29,10 @@ void seek(int fd, unsigned position);
 unsigned tell(int fd);
 void close(int fd);
 /* -------- */
+
+/* project3 Mmap */
 void *mmap (void *addr, size_t length, int writable, int fd, off_t offset);
 void munmap (void *addr);
+/* ------------- */
 
 #endif /* userprog/syscall.h */
