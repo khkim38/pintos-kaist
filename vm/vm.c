@@ -4,7 +4,9 @@
 #include "vm/vm.h"
 #include "vm/inspect.h"
 
+/* project3 Memory Management */
 struct list frame_table;
+/* -------------------------- */
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -18,7 +20,9 @@ vm_init (void) {
 	register_inspect_intr ();
 	/* DO NOT MODIFY UPPER LINES. */
 	/* TODO: Your code goes here. */
+	/* project3 Memory Management */
 	list_init (&frame_table);
+	/* -------------------------- */
 }
 
 /* Get the type of the page. This function is useful if you want to know the
@@ -79,6 +83,7 @@ struct page *
 spt_find_page (struct supplemental_page_table *spt UNUSED, void *va UNUSED) {
 	// struct page *page = NULL;
 	/* TODO: Fill this function. */
+	/* project3 Memory Management */
 	struct page *page = (struct page*) malloc (sizeof (struct page));
 	struct hash_elem *e;
 
@@ -93,7 +98,7 @@ spt_find_page (struct supplemental_page_table *spt UNUSED, void *va UNUSED) {
 	else {
 		page = NULL;
 	}
-
+	/* -------------------------- */
 	return page;
 }
 
@@ -103,6 +108,7 @@ spt_insert_page (struct supplemental_page_table *spt UNUSED,
 		struct page *page UNUSED) {
 	int succ = false;
 	/* TODO: Fill this function. */
+	/* project3 Memory Management */
 	struct hash_elem *e = hash_insert (&spt->hash_table, &page->hash_elem);
 	if (e == NULL){
 		succ = true;
@@ -110,6 +116,7 @@ spt_insert_page (struct supplemental_page_table *spt UNUSED,
 	else {
 		succ = false;
 	}
+	/* -------------------------- */
 
 	return succ;
 }
@@ -123,9 +130,12 @@ spt_remove_page (struct supplemental_page_table *spt, struct page *page) {
 /* Get the struct frame, that will be evicted. */
 static struct frame *
 vm_get_victim (void) {
-	 /* TODO: The policy for eviction is up to you. */
+	// struct frame *victim = NULL;
+	/* TODO: The policy for eviction is up to you. */
 
+	/* project3 Memory Management */
 	struct frame *victim = list_entry (list_pop_front (&frame_table), struct frame, frame_elem);
+	/* -------------------------- */
 
 	return victim;
 }
@@ -134,10 +144,12 @@ vm_get_victim (void) {
  * Return NULL on error.*/
 static struct frame *
 vm_evict_frame (void) {
-	struct frame *victim = vm_get_victim ();
 	/* TODO: swap out the victim and return the evicted frame. */
+	/* project3 Memory Management */
+	struct frame *victim = vm_get_victim ();
 	swap_out (victim->page);
 	return victim;
+	/* -------------------------- */
 }
 
 /* palloc() and get frame. If there is no available page, evict the page
@@ -146,6 +158,7 @@ vm_evict_frame (void) {
  * space.*/
 static struct frame *
 vm_get_frame (void) {
+	/* project3 Memory Management */
 	struct frame *frame = (struct frame *) malloc (sizeof (struct frame));
 	/* TODO: Fill this function. */
 	frame->kva = palloc_get_page (PAL_USER);
@@ -157,6 +170,7 @@ vm_get_frame (void) {
 
 	list_push_back (&frame_table, &frame->frame_elem);
 	frame->page = NULL;
+	/* -------------------------- */
 
 	ASSERT (frame != NULL);
 	ASSERT (frame->page == NULL);
@@ -217,10 +231,13 @@ vm_dealloc_page (struct page *page) {
 /* Claim the page that allocate on VA. */
 bool
 vm_claim_page (void *va UNUSED) {
+	/* TODO: Fill this function */
+	/* project3 Memory Management */
 	struct page *page = spt_find_page (&thread_current ()->spt, va);
 	
 	if (page == NULL)
 		return false;
+	/* -------------------------- */
 
 	return vm_do_claim_page (page);
 }
@@ -235,10 +252,12 @@ vm_do_claim_page (struct page *page) {
 	page->frame = frame;
 
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
+	/* project3 Memory Management */
 	if (!pml4_set_page(thread_current ()->pml4, page->va, frame->kva, page->writable))
 	{
 		return false;
 	}
+	/* -------------------------- */
 
 	return swap_in (page, frame->kva);
 }
@@ -246,7 +265,9 @@ vm_do_claim_page (struct page *page) {
 /* Initialize new supplemental page table */
 void
 supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
+	/* project3 Memory Management */
 	hash_init (&spt->hash_table, page_hash, page_less, NULL);
+	/* -------------------------- */
 }
 
 /* Copy supplemental page table from src to dst */
@@ -262,7 +283,7 @@ supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 	 * TODO: writeback all the modified contents to the storage. */
 }
 
-/* project3 memory management additional function */
+/* project3 Memory Management: additional function */
 unsigned page_hash (const struct hash_elem *p_, void *aux UNUSED) {
     const struct page *p = hash_entry(p_, struct page, hash_elem);
     return hash_bytes(&p->va, sizeof p->va);
@@ -274,3 +295,4 @@ bool page_less (const struct hash_elem *a_, const struct hash_elem *b_, void *au
 
     return a->va < b->va;
 }
+/* ----------------------------------------------- */

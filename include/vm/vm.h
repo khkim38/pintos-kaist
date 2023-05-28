@@ -1,7 +1,10 @@
 #ifndef VM_VM_H
 #define VM_VM_H
 #include <stdbool.h>
+
+/* project3 Memory management */
 #include <hash.h>
+/* -------------------------- */
 #include "threads/vaddr.h"
 #include "threads/palloc.h"
 
@@ -48,8 +51,10 @@ struct page {
 	struct frame *frame;   /* Back reference for frame */
 
 	/* Your implementation */
+	/* project3 Memory Management */
 	bool writable;
 	struct hash_elem hash_elem;
+	/* -------------------------- */
 
 	/* Per-type data are binded into the union.
 	 * Each function automatically detects the current union */
@@ -67,7 +72,9 @@ struct page {
 struct frame {
 	void *kva;
 	struct page *page;
+	/* project3 Memory Management */
 	struct list_elem frame_elem;
+	/* -------------------------- */
 };
 
 /* The function table for page operations.
@@ -90,7 +97,9 @@ struct page_operations {
  * We don't want to force you to obey any specific design for this struct.
  * All designs up to you for this. */
 struct supplemental_page_table {
+	/* project3 Memory Management */
 	struct hash hash_table;
+	/* -------------------------- */
 };
 
 #include "threads/thread.h"
@@ -115,8 +124,9 @@ void vm_dealloc_page (struct page *page);
 bool vm_claim_page (void *va);
 enum vm_type page_get_type (struct page *page);
 
-/* project3 memory management additional function */
+/* project3 Memory Management: additional function */
 unsigned page_hash (const struct hash_elem *p_, void *aux UNUSED);
 bool page_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED);
+/* ----------------------------------------------- */
 
 #endif  /* VM_VM_H */
