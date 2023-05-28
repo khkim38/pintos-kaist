@@ -5,7 +5,9 @@ struct page;
 enum vm_type;
 
 struct anon_page {
+    /* project3 Anonymous Page */
     int swap_slot;
+    /* ----------------------- */
 };
 
 void vm_anon_init (void);

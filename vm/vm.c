@@ -60,6 +60,8 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		/* TODO: Create the page, fetch the initialier according to the VM type,
 		 * TODO: and then create "uninit" page struct by calling uninit_new. You
 		 * TODO: should modify the field after calling the uninit_new. */
+
+		/* project3 Anonymous Page */
 		struct page *page = (struct page*) malloc (sizeof (struct page));
 
 		switch(VM_TYPE(type)){
@@ -73,6 +75,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		page->writable = writable;
 
 		return spt_insert_page(spt, page);
+		/* ----------------------- */
 	}
 err:
 	return false;
@@ -201,6 +204,8 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	struct page *page = NULL;
 	/* TODO: Validate the fault */
 	/* TODO: Your code goes here */
+
+	/* project3 Anonymous Page */
 	if (is_kernel_vaddr(addr)) {
         return false;
 	}
@@ -218,6 +223,7 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
             return true;
     }
     return false;
+	/* ----------------------- */
 }
 
 /* Free the page.

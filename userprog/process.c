@@ -255,7 +255,9 @@ int process_exec(void *f_name)
 	/* We first kill the current context */
 	process_cleanup();
 
+	/* project3 Anonymous Page */
 	supplemental_page_table_init(&thread_current()->spt);
+	/* ----------------------- */
 
 	/* And then load the binary */
 	success = load(file_name, &_if);
@@ -781,6 +783,8 @@ lazy_load_segment(struct page *page, void *aux)
 	/* TODO: Load the segment from the file */
 	/* TODO: This called when the first page fault occurs on address VA. */
 	/* TODO: VA is available when calling this function. */
+
+	/* project3 Anonymous Page */
 	struct container *container = (struct container *)aux;
 	struct file *file = container->file;
 	off_t ofs = container->ofs;
@@ -796,6 +800,7 @@ lazy_load_segment(struct page *page, void *aux)
 	memset(page->frame->kva + page_read_bytes, 0, page_zero_bytes);
 
 	return true;
+	/* ----------------------- */
 }
 
 /* Loads a segment starting at offset OFS in FILE at address
@@ -829,10 +834,13 @@ load_segment(struct file *file, off_t ofs, uint8_t *upage,
 		size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
 		/* TODO: Set up aux to pass information to the lazy_load_segment. */
+
+		/* project3 Anonymous Page */
 		struct container *aux = (struct container *)malloc(sizeof(struct container));
 		aux->file = file;
 		aux->ofs = ofs;
 		aux->page_read_bytes = page_read_bytes;
+		/* ----------------------- */
 
 		if (!vm_alloc_page_with_initializer(VM_ANON, upage,
 											writable, lazy_load_segment, aux))
@@ -842,7 +850,9 @@ load_segment(struct file *file, off_t ofs, uint8_t *upage,
 		read_bytes -= page_read_bytes;
 		zero_bytes -= page_zero_bytes;
 		upage += PGSIZE;
+		/* project3 Anonymous Page */
 		ofs += page_read_bytes;
+		/* ----------------------- */
 	}
 	return true;
 }
@@ -858,6 +868,8 @@ setup_stack(struct intr_frame *if_)
 	 * TODO: If success, set the rsp accordingly.
 	 * TODO: You should mark the page is stack. */
 	/* TODO: Your code goes here */
+
+	/* project3 Anonymous Page */
 	if (vm_alloc_page(VM_ANON | VM_MARKER_0, stack_bottom, true))
 	{
 		success = vm_claim_page(stack_bottom);
@@ -866,6 +878,7 @@ setup_stack(struct intr_frame *if_)
 			thread_current()->stack_bottom = stack_bottom;
 		}
 	}
+	/* ----------------------- */
 
 	return success;
 }

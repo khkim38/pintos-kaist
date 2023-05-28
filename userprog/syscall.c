@@ -16,7 +16,10 @@
 #include "threads/palloc.h"
 #include "threads/vaddr.h"
 #include "threads/synch.h"
+
+/* project3 Anonymous Page: check buffer */
 #include "vm/vm.h"
+/* ------------------------------------- */
 
 void syscall_entry(void);
 void syscall_handler(struct intr_frame *);
@@ -69,7 +72,9 @@ void syscall_handler(struct intr_frame *f UNUSED)
 		f->R.rax = fork(f->R.rdi, f);
 		break;
 	case SYS_EXEC:
+		/* project3 Anonymous Page: check buffer */
 		check_address(f->R.rdi);
+		/* ------------------------------------- */
 		if (exec(f->R.rdi) == -1)
 			exit(-1);
 		// exec(f->R.rdi);
@@ -78,26 +83,36 @@ void syscall_handler(struct intr_frame *f UNUSED)
 		f->R.rax = process_wait(f->R.rdi);
 		break;
 	case SYS_CREATE:
+		/* project3 Anonymous Page: check buffer */
 		check_address(f->R.rdi);
+		/* ------------------------------------- */
 		f->R.rax = (uint64_t)create(f->R.rdi, f->R.rsi);
 		break;
 	case SYS_REMOVE:
+		/* project3 Anonymous Page: check buffer */
 		check_address(f->R.rdi);
+		/* ------------------------------------- */
 		f->R.rax = (uint64_t)remove(f->R.rdi);
 		break;
 	case SYS_OPEN:
+		/* project3 Anonymous Page: check buffer */
 		check_address(f->R.rdi);
+		/* ------------------------------------- */
 		f->R.rax = (uint64_t)open(f->R.rdi);
 		break;
 	case SYS_FILESIZE:
 		f->R.rax = (uint64_t)filesize(f->R.rdi);
 		break;
 	case SYS_READ:
+		/* project3 Anonymous Page: check buffer */
 		check_valid_buffer(f->R.rsi, f->R.rdx, f->rsp, 1);
+		/* ------------------------------------- */
 		f->R.rax = (uint64_t)read(f->R.rdi, f->R.rsi, f->R.rdx);
 		break;
 	case SYS_WRITE:
+		/* project3 Anonymous Page: check buffer */
 		check_valid_buffer(f->R.rsi, f->R.rdx, f->rsp, 0);
+		/* ------------------------------------- */
 		f->R.rax = (uint64_t)write(f->R.rdi, f->R.rsi, f->R.rdx);
 		break;
 	case SYS_SEEK:
@@ -123,7 +138,7 @@ void syscall_handler(struct intr_frame *f UNUSED)
 	/* -------- */
 }
 
-/* project3 Anonymous Page */
+/* project3 Anonymous Page: check buffer */
 
 struct page * check_address(void *addr){
 	if(is_kernel_vaddr(addr)) exit(-1);
@@ -143,6 +158,7 @@ void check_valid_buffer(void* buffer, unsigned size, void* rsp, bool to_write){
 		if(to_write == true && page->writable == false) exit(-1);
 	}
 }
+/* ------------------------------------- */
 
 void halt(void)
 {
