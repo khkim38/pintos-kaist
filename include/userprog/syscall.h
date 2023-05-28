@@ -7,7 +7,9 @@
 
 void syscall_init (void);
 
+/* project3 Anonymous Page: check buffer */
 struct page * check_address(void *addr);
+/* ------------------------------------- */
 // void directory_to_file(int file);
 
 void halt(void);
