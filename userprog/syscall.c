@@ -58,7 +58,10 @@ void syscall_init(void)
 void syscall_handler(struct intr_frame *f UNUSED)
 {
 	// TODO: Your implementation goes here.
+	/* project3 Stack Growth */
 	thread_current()->rsp_stack = f->rsp;
+	/* --------------------- */
+	
 	/* project2 */
 	switch (f->R.rax)
 	{
