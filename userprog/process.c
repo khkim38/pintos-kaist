@@ -352,7 +352,10 @@ process_cleanup(void)
 	struct thread *curr = thread_current();
 
 #ifdef VM
-	supplemental_page_table_kill(&curr->spt);
+	/*project3 mapped_file*/
+	if(!hash_empty(&curr->spt.hash_table))
+		supplemental_page_table_kill(&curr->spt);
+	/*-----------------------------------------*/
 #endif
 
 	uint64_t *pml4;

@@ -105,4 +105,19 @@ do_mmap (void *addr, size_t length, int writable,
 /* Do the munmap */
 void
 do_munmap (void *addr) {
+	/* project3 Mmap */
+	while(1){
+		struct page *page=spt_find_page(&thread_current()->spt,addr);
+		if(page==NULL){
+			break;
+		}
+		struct container *container=(struct container*) page->uninit.aux;
+		if(pml4_is_dirty(thread_current()->pml4,page->va)){
+			file_write_at(container->file,addr,container->page_read_bytes,container->ofs);
+			pml4_set_dirty(thread_current()->pml4,page->va,0);
+		}
+		pml4_clear_page(thread_current()->pml4,page->va);
+		addr+=PGSIZE;
+	}
+	/* ------------- */
 }

@@ -1,0 +1,18 @@
+FAIL
+Kernel panic in run: PANIC at ../../threads/palloc.c:321 in palloc_free_multiple(): assertion `bitmap_all (pool->used_map, page_idx, page_cnt)' failed.
+Call stack: 0x800421877d 0x800420c060 0x800420c0ad 0x800420d3dc 0x800420d45f 0x800420d4e2 0x800420d5ab 0x800421c57e 0x800421c4af 0x80042072f2 0x800421dd0c 0x800421d65a 0x80042095b5 0x80042099d3
+Translation of call stack:
+0x000000800421877d: debug_panic (lib/kernel/debug.c:32)
+0x000000800420c060: palloc_free_multiple (threads/palloc.c:322)
+0x000000800420c0ad: palloc_free_page (threads/palloc.c:329)
+0x000000800420d3dc: pt_destroy (threads/mmu.c:160 (discriminator 2))
+0x000000800420d45f: pgdir_destroy (threads/mmu.c:170 (discriminator 2))
+0x000000800420d4e2: pdpe_destroy (threads/mmu.c:180 (discriminator 2))
+0x000000800420d5ab: pml4_destroy (threads/mmu.c:199)
+0x000000800421c57e: process_cleanup (userprog/process.c:376)
+0x000000800421c4af: process_exit (userprog/process.c:344)
+0x00000080042072f2: thread_exit (threads/thread.c:321)
+0x000000800421dd0c: fork (userprog/syscall.c:181)
+0x000000800421d65a: page_fault (userprog/exception.c:149)
+0x00000080042095b5: intr_handler (threads/interrupt.c:352)
+0x00000080042099d3: intr_entry (threads/intr-stubs.o:?)
