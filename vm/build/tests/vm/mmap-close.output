@@ -19,8 +19,8 @@ Executing 'mmap-close':
 (mmap-close) mmap "sample.txt"
 mmap-close: exit(-1)
 Execution of 'mmap-close' complete.
-Timer: 85 ticks
-Thread: 36 idle ticks, 47 kernel ticks, 2 user ticks
+Timer: 81 ticks
+Thread: 33 idle ticks, 46 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 120 reads, 256 writes
 hd1:0: 109 reads, 0 writes

@@ -27,12 +27,12 @@ r11 0000000000000206 r12 ffff9c04240f1800 r13 0000800423e00000 r14 0000800423ef1
 r15 0000800422bdf000 rflags 00000206
 es: 001b ds: 001b cs: 0023 ss: 001b
 Execution of 'swap-file' complete.
-Timer: 544 ticks
-Thread: 185 idle ticks, 180 kernel ticks, 179 user ticks
+Timer: 527 ticks
+Thread: 201 idle ticks, 151 kernel ticks, 175 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 7736 reads, 15900 writes
 hd1:0: 7931 reads, 0 writes
-hd1:1: 0 reads, 0 writes
+hd1:1: 0 reads, 8 writes
 Console: 1629 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults

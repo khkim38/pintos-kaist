@@ -4,7 +4,7 @@ Kernel command line: -q -f put fork-multiple run fork-multiple
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  152,166,400 loops/s.
+Calibrating timer...  157,081,600 loops/s.
 hd0:0: detected 337 sector (168 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 104 sector (52 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -14,20 +14,16 @@ Boot complete.
 Putting 'fork-multiple' into the file system...
 Executing 'fork-multiple':
 (fork-multiple) begin
-(fork-multiple) Parent: child exit status is 0
-(fork-multiple) Parent: child exit status is 0
-(fork-multiple) Parent: child exit status is 0
-(fork-multiple) Parent: child exit status is 0
-(fork-multiple) end
-fork-multiple: exit(0)
-Execution of 'fork-multiple' complete.
+Kernel PANIC at ../../threads/synch.c:198 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
+Call stack: 0x800421877d 0x800420aa7c 0x800420c421 0x8004221949 0x8004221de9 0x8004221d01 0x800421d645 0x80042095b5 0x80042099d3 0x8004219038 0x800420c513 0x8004221fd4 0x800421c0a4 0x80042077bc.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
 Timer: 82 ticks
-Thread: 34 idle ticks, 45 kernel ticks, 3 user ticks
+Thread: 34 idle ticks, 46 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 87 reads, 236 writes
 hd1:0: 104 reads, 0 writes
 hd1:1: 0 reads, 0 writes
-Console: 1167 characters output
-Keyboard: 0 keys pressed
-Exception: 0 page faults
-Powering off...
+Console: 1363 characters output
+Key

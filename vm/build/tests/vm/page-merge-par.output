@@ -17,24 +17,24 @@ Executing 'page-merge-par':
 (page-merge-par) begin
 (page-merge-par) init
 (page-merge-par) sort chunk 0
-(page-merge-par) sort chunk 1
-(page-merge-par) sort chunk 2
-(page-merge-par) sort chunk 3
-(page-merge-par) sort chunk 4
-(page-merge-par) sort chunk 5
-(page-merge-par) sort chunk 6
-(page-merge-par) sort chunk 7
-(page-merge-par) wait for child 0
-(page-merge-par) wait for child 0: FAILED
-page-merge-par: exit(1)
-Execution of 'page-merge-par' complete.
-Timer: 4165 ticks
-Thread: 47 idle ticks, 53 kernel ticks, 4065 user ticks
+Interrupt 0x0d (#GP General Protection Exception) at rip=8004218fe2
+ cr2=0000000000805eb8 error=               0
+rax cccccccccccccccc rbx 0000000000000000 rcx 000000800421ce6e rdx cccccccccccccccc
+rsp 0000008004268d40 rbp 0000008004268d50 rsi 000000000077c000 rdi 000000800425de18
+rip 0000008004218fe2 r8 0000008004259018  r9 0000000000000000 r10 0000000000000000
+r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000202
+es: 0010 ds: 0010 cs: 0008 ss: 0010
+Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x800421877d 0x800421d54e 0x80042095b5 0x80042099d3 0x8004219038 0x800420c513 0x8004221949 0x8004221868 0x8004221fbe 0x800421c0a4 0x80042077bc.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Timer: 219 ticks
+Thread: 30 idle ticks, 51 kernel ticks, 138 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 391 reads, 4666 writes
+hd0:1: 139 reads, 998 writes
 hd1:0: 218 reads, 0 writes
 hd1:1: 0 reads, 0 writes
-Console: 1373 characters output
-Keyboard: 0 keys pressed
-Exception: 0 page faults
-Powering off...
+Console: 1952 characters output
+Key

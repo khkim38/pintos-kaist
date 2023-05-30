@@ -16,17 +16,16 @@ Putting 'sample.txt' into the file system...
 Executing 'fork-close':
 (fork-close) begin
 (fork-close) open "sample.txt"
-(fork-close) Parent success
-(fork-close) end
-fork-close: exit(0)
-Execution of 'fork-close' complete.
+Kernel PANIC at ../../threads/synch.c:198 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
+Call stack: 0x800421877d 0x800420aa7c 0x800420c421 0x8004221949 0x8004221de9 0x8004221d01 0x800421d645 0x80042095b5 0x80042099d3 0x8004219038 0x800420c513 0x8004221949 0x8004221868 0x8004221fbe 0x800421c0a4 0x80042077bc.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
 Timer: 85 ticks
-Thread: 33 idle ticks, 50 kernel ticks, 2 user ticks
+Thread: 32 idle ticks, 50 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 122 reads, 258 writes
+hd0:1: 112 reads, 258 writes
 hd1:0: 110 reads, 0 writes
 hd1:1: 0 reads, 0 writes
-Console: 1075 characters output
-Keyboard: 0 keys pressed
-Exception: 0 page faults
-Powering off...
+Console: 1466 characters output
+Key

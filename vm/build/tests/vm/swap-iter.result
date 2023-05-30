@@ -9,7 +9,7 @@ Translation of call stack:
 0x000000800420d45f: pgdir_destroy (threads/mmu.c:170 (discriminator 2))
 0x000000800420d4e2: pdpe_destroy (threads/mmu.c:180 (discriminator 2))
 0x000000800420d5ab: pml4_destroy (threads/mmu.c:199)
-0x000000800421c57e: process_cleanup (userprog/process.c:376)
+0x000000800421c57e: process_cleanup (userprog/process.c:378)
 0x000000800421c4af: process_exit (userprog/process.c:344)
 0x00000080042072f2: thread_exit (threads/thread.c:321)
 0x000000800421dd0c: fork (userprog/syscall.c:181)

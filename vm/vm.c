@@ -282,6 +282,28 @@ supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
 bool
 supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 		struct supplemental_page_table *src UNUSED) {
+			struct thread *curr=thread_current();
+			struct hash_iterator h_i;
+			struct hash *parent = &src->hash_table;
+			hash_first(&h_i,parent);
+			while(hash_next(&h_i)){
+				struct page *parent_page=hash_entry(hash_cur(&h_i),struct page,hash_elem);
+				if(parent_page->operations->type==VM_UNINIT){
+					vm_initializer *init=parent_page->uninit.init;
+					void *aux=parent_page->uninit.aux;
+					vm_alloc_page_with_initializer(parent_page->uninit.type,parent_page->va,parent_page->writable,init,aux);
+				} else {
+					struct page *child_page=(struct page*)malloc(sizeof(struct page));
+					memcpy(child_page,parent_page,PGSIZE);
+					if(!spt_insert_page(dst,child_page)){
+						return false;
+					}
+					if(!pml4_set_page(curr->pml4,child_page->va,child_page->frame->kva,false)){
+						return false;
+					}
+				}
+			}
+			return true;
 }
 /*project3 munmap*/
 void spt_destructor(struct hash_elem *e){
@@ -299,7 +321,7 @@ supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 	 while(hash_next(&h_i)){
 		struct page *page=hash_entry(hash_cur(&h_i),struct page,hash_elem);
 		if(page->operations->type==VM_FILE){
-			do_munmap(page->va);
+			munmap(page->va);
 		}
 	 }
 	 hash_destroy(&spt->hash_table,spt_destructor);
