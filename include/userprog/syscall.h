@@ -3,7 +3,7 @@
 
 /*project2*/
 #include "threads/synch.h"
-/* project3 Mmap */
+/* project3 Memory Mapped Files */
 #include "filesys/off_t.h"
 /* ------------- */
 
@@ -30,7 +30,7 @@ unsigned tell(int fd);
 void close(int fd);
 /* -------- */
 
-/* project3 Mmap */
+/* project3 Memory Mapped Files */
 void *mmap (void *addr, size_t length, int writable, int fd, off_t offset);
 void munmap (void *addr);
 /* ------------- */

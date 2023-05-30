@@ -148,9 +148,9 @@ page_fault (struct intr_frame *f) {
 	if (vm_try_handle_fault (f, fault_addr, user, write, not_present))
 		return;
 #endif
-	/*project3 bad case 해결*/
+	/* project3 Test case: bad case 해결 */
 	exit(-1);
-	/*---------------------*/
+	/* --------------------- */
 	/* Count page faults. */
 	page_fault_cnt++;
 

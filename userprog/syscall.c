@@ -127,7 +127,7 @@ void syscall_handler(struct intr_frame *f UNUSED)
 	case SYS_CLOSE:
 		close(f->R.rdi);
 		break;
-	/* project3 Mmap */
+	/* project3 Memory Mapped Files */
 	case SYS_MMAP:
 		f->R.rax = mmap(f->R.rdi, f->R.rsi, f->R.rdx, f->R.r10, f->R.r8);
 		break;
@@ -229,11 +229,11 @@ int remove(const char *file)
 int open(const char *file)
 {
 	// check_address(file);
-	/*project 3 open-null 해결*/
+	/* project 3 Test case: open-null 해결 */
 	if(file==NULL){
 		return -1;
 	}
-	/*------------------------*/
+	/* ---------------------------------- */
 	struct thread *cur = thread_current();
 	lock_acquire(&file_lock);
 	struct file *file_obj = filesys_open(file);
@@ -376,7 +376,7 @@ void close(int fd)
 
 /* -------- */
 
-/* project3 Mmap */
+/* project3 Memory Mapped Files: Mmap & Munmap */
 void *mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
 
     if (offset % PGSIZE != 0) {

@@ -2,7 +2,7 @@
 
 #include "vm/vm.h"
 
-/* project3 Mmap */
+/* project3 Memory Mapped Files */
 #include "userprog/process.h"
 #include "threads/vaddr.h"
 #include "threads/mmu.h"
@@ -55,7 +55,7 @@ file_backed_destroy (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
 }
 
-/* project3 Mmap */
+/* project3 Memory mapped Files: Mmap */
 static bool lazy_load_mmap(struct page *page, void *aux)
 {
 	struct container *container = (struct container *)aux;
@@ -79,7 +79,7 @@ static bool lazy_load_mmap(struct page *page, void *aux)
 void *
 do_mmap (void *addr, size_t length, int writable,
 		struct file *file, off_t offset) {
-	/* project3 Mmap */
+	/* project3 Memory Mapped Files: Mmap */
 	void * ori_addr = addr;
     size_t read_bytes = length > file_length(file) ? file_length(file) : length;
     size_t zero_bytes = PGSIZE - read_bytes % PGSIZE;
@@ -108,7 +108,7 @@ do_mmap (void *addr, size_t length, int writable,
 /* Do the munmap */
 void
 do_munmap (void *addr) {
-	/* project3 Mmap */
+	/* project3 Memory Mapped Files: Munmap */
 	while(1){
 		struct page *page=spt_find_page(&thread_current()->spt,addr);
 		if(page==NULL){

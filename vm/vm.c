@@ -305,7 +305,7 @@ supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 			}
 			return true;
 }
-/*project3 munmap*/
+/* project3 Memory Mapped Files: Munmap */
 void spt_destructor(struct hash_elem *e){
 	struct page *p=hash_entry(e,struct page,hash_elem);
 	free(p);
@@ -326,7 +326,7 @@ supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 	 }
 	 hash_destroy(&spt->hash_table,spt_destructor);
 }
-/*project3 munmap---------------------------------------------------------*/
+/* ------------------------------------ */
 
 /* project3 Memory Management: additional function */
 unsigned page_hash (const struct hash_elem *p_, void *aux UNUSED) {
