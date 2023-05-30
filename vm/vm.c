@@ -295,7 +295,7 @@ supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 					vm_alloc_page_with_initializer(parent_page->uninit.type,parent_page->va,parent_page->writable,init,aux);
 				} else {
 					struct page *child_page=(struct page*)malloc(sizeof(struct page));
-					memcpy(child_page,parent_page,PGSIZE);
+					memcpy(child_page,parent_page,sizeof(struct page));
 					if(!spt_insert_page(dst,child_page)){
 						return false;
 					}
@@ -304,6 +304,7 @@ supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 					}
 				}
 			}
+
 			return true;
 			/* --------------------- */
 }

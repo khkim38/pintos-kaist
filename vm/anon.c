@@ -63,7 +63,9 @@ anon_swap_in (struct page *page, void *kva) {
 	for (int i=0;i<SECTORS_IN_PAGE;i++){
 		disk_read(swap_disk,(page_n*SECTORS_IN_PAGE)+i,kva+(DISK_SECTOR_SIZE*i));
 	}
-	bitmap_flip(swap_table,page_n);
+	// bitmap_flip(swap_table,page_n);
+	bitmap_set(swap_table,page_n,false);
+
 	return true;
 	/* -------------------- */
 }
@@ -80,7 +82,9 @@ anon_swap_out (struct page *page) {
 	for (int i=0;i<SECTORS_IN_PAGE;i++){
 		disk_write(swap_disk,(page_n*SECTORS_IN_PAGE)+i,page->va+(DISK_SECTOR_SIZE*i));
 	}
-	bitmap_flip(swap_table,page_n);
+	// bitmap_flip(swap_table,page_n);
+	bitmap_set(swap_table,page_n,true);
+	pml4_clear_page(thread_current()->pml4,page->va);
 	anon_page->swap_slot=page_n;
 	return true;
 	/* -------------------- */

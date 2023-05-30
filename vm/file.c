@@ -43,12 +43,45 @@ file_backed_initializer (struct page *page, enum vm_type type, void *kva) {
 static bool
 file_backed_swap_in (struct page *page, void *kva) {
 	struct file_page *file_page UNUSED = &page->file;
+
+	/* project3 Swap In/Out */
+	if (page == NULL) return false;
+
+	struct container *aux = (struct container *)page->uninit.aux;
+
+	struct file *file = aux->file;
+	off_t ofs = aux->ofs;	
+	size_t page_read_bytes = aux->page_read_bytes;
+	size_t page_zero_bytes = PGSIZE - page_read_bytes;
+
+	file_seek (file, ofs);
+
+	if (file_read(file, kva, page_read_bytes) != (int) page_read_bytes){
+		// palloc_free_page(kva);
+		return false;
+	}
+
+	memset (kva + page_read_bytes, 0, page_zero_bytes);
+	return true;
+	/* -------------------- */
 }
 
 /* Swap out the page by writeback contents to the file. */
 static bool
 file_backed_swap_out (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
+
+	/* project3 Swap In/Out */
+	if (page == NULL) return false;
+
+	struct container *aux = (struct container *)page->uninit.aux;
+
+	if(pml4_is_dirty(thread_current()->pml4,page->va)){
+		file_write_at(aux->file,page->va,aux->page_read_bytes,aux->ofs);
+		pml4_set_dirty(thread_current()->pml4,page->va,0);
+	}
+	pml4_clear_page(thread_current()->pml4,page->va);
+	/* -------------------- */
 }
 
 /* Destory the file backed page. PAGE will be freed by the caller. */

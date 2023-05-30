@@ -217,7 +217,15 @@ int exec(char *file_name)
 int create(const char *file, unsigned initial_size)
 {
 	// check_address(file);
-	return filesys_create(file, initial_size);
+	if (file==NULL){
+		return -1;
+	}
+
+	lock_acquire(&file_lock);
+	bool result = filesys_create(file, initial_size);
+	lock_release(&file_lock);
+
+	return result;
 }
 
 int remove(const char *file)
