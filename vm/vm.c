@@ -282,6 +282,7 @@ supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
 bool
 supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 		struct supplemental_page_table *src UNUSED) {
+			/* project3 Swap In/Out */
 			struct thread *curr=thread_current();
 			struct hash_iterator h_i;
 			struct hash *parent = &src->hash_table;
@@ -304,6 +305,7 @@ supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 				}
 			}
 			return true;
+			/* --------------------- */
 }
 /* project3 Memory Mapped Files: Munmap */
 void spt_destructor(struct hash_elem *e){
@@ -321,7 +323,9 @@ supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 	 while(hash_next(&h_i)){
 		struct page *page=hash_entry(hash_cur(&h_i),struct page,hash_elem);
 		if(page->operations->type==VM_FILE){
+			/* project3 Swap In/Out */
 			munmap(page->va);
+			/* --------------------- */
 		}
 	 }
 	 hash_destroy(&spt->hash_table,spt_destructor);
