@@ -101,8 +101,9 @@ tid_t process_fork(const char *name, struct intr_frame *if_ UNUSED)
 	struct thread *cur = thread_current();
 	memcpy(&cur->parent_if_, if_, sizeof(struct intr_frame));
 	tid_t pid = thread_create(name, PRI_DEFAULT, __do_fork, thread_current());
+
 	if (pid == TID_ERROR)
-	{
+	{	
 		return TID_ERROR;
 	}
 
@@ -119,9 +120,9 @@ tid_t process_fork(const char *name, struct intr_frame *if_ UNUSED)
 			break;
 		}
 	}
-
+	
 	sema_down(&child->fork_child_semaphore);
-
+	
 	if (child->exit == -1)
 	{
 		return TID_ERROR;
@@ -151,8 +152,9 @@ duplicate_pte(uint64_t *pte, void *va, void *aux)
 	/* 3. TODO: Allocate new PAL_USER page for the child and set result to
 	 *    TODO: NEWPAGE. */
 	newpage = palloc_get_page(PAL_USER);
-	if (newpage == NULL)
+	if (newpage == NULL){
 		return false;
+	}
 	/* 4. TODO: Duplicate parent's page to the new page and
 	 *    TODO: check whether parent's page is writable or not (set WRITABLE
 	 *    TODO: according to the result). */
@@ -221,6 +223,8 @@ __do_fork(void *aux)
 			current->file_list[i] = NULL;
 	}
 
+	
+
 	current->parent = parent;
 	current->fd_idx = parent->fd_idx;
 	// sema_up(&current->fork_semaphore);
@@ -228,8 +232,11 @@ __do_fork(void *aux)
 	if_.R.rax = 0;
 	process_init();
 	/* Finally, switch to the newly created process. */
-	if (succ)
+
+	if (succ){
+		// printf("debug: %d\n", current->tid);
 		do_iret(&if_);
+	}
 error:
 	// sema_up(&current->fork_semaphore);
 	sema_up(&current->fork_child_semaphore);
@@ -243,7 +250,7 @@ int process_exec(void *f_name)
 {
 	char *file_name = f_name;
 	bool success;
-
+	
 	/* We cannot use the intr_frame in the thread structure.
 	 * This is because when current thread rescheduled,
 	 * it stores the execution information to the member. */
@@ -790,17 +797,16 @@ lazy_load_segment(struct page *page, void *aux)
 	/* project3 Anonymous Page */
 	struct container *container = (struct container *)aux;
 	struct file *file = container->file;
-	off_t ofs = container->ofs;
 	size_t page_read_bytes = container->page_read_bytes;
-	size_t page_zero_bytes = PGSIZE - page_read_bytes;
-
+	size_t page_first = PGSIZE - page_read_bytes;
+	off_t ofs = container->ofs;
 	file_seek (file, ofs);
 	
 	if (file_read(file, page->frame->kva, page_read_bytes) != (int) page_read_bytes){
 		palloc_free_page(page->frame->kva);
 		return false;
 	}
-	memset(page->frame->kva + page_read_bytes, 0, page_zero_bytes);
+	memset(page->frame->kva + page_read_bytes, 0, page_first);
 
 	return true;
 	/* ----------------------- */
@@ -877,8 +883,8 @@ setup_stack(struct intr_frame *if_)
 	{
 		success = vm_claim_page(stack_bottom);
 		if (success){
-			if_->rsp = USER_STACK;
 			thread_current()->stack_bottom = stack_bottom;
+			if_->rsp = USER_STACK;
 		}
 	}
 	/* ----------------------- */

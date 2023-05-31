@@ -56,6 +56,7 @@ struct page {
 	/* project3 Memory Management */
 	bool writable;
 	struct hash_elem hash_elem;
+	struct list_elem mmap_elem;
 	/* -------------------------- */
 
 	/* Per-type data are binded into the union.
@@ -77,6 +78,13 @@ struct frame {
 	/* project3 Memory Management */
 	struct list_elem frame_elem;
 	/* -------------------------- */
+};
+
+struct mmap_file {
+	uintptr_t addr;
+	struct file *file;
+	struct list_elem elem;
+	struct list page_list;
 };
 
 /* The function table for page operations.
@@ -127,8 +135,8 @@ bool vm_claim_page (void *va);
 enum vm_type page_get_type (struct page *page);
 
 /* project3 Memory Management: additional function */
-unsigned page_hash (const struct hash_elem *p_, void *aux UNUSED);
-bool page_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED);
+unsigned hash_func (const struct hash_elem *p_, void *aux UNUSED);
+bool hash_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED);
 /* ----------------------------------------------- */
 
 #endif  /* VM_VM_H */

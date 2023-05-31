@@ -517,6 +517,8 @@ init_thread(struct thread *t, const char *name, int priority)
 	t->original_priority = priority;
 	t->lock = NULL;
 	list_init(&t->donation_list);
+	/* project3 */
+	list_init(&t->mmap_list);
 	/*project1 mlfqs*/
 	/*default value is both 0*/
 	t->niceness = 0;

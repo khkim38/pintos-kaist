@@ -151,6 +151,10 @@ vm_evict_frame (void) {
 	/* project3 Memory Management */
 	struct frame *victim = vm_get_victim ();
 	swap_out (victim->page);
+
+	victim->page->frame = NULL;
+	victim->page = NULL;
+
 	return victim;
 	/* -------------------------- */
 }
@@ -167,7 +171,6 @@ vm_get_frame (void) {
 	frame->kva = palloc_get_page (PAL_USER);
 	if (frame->kva == NULL){
 		frame = vm_evict_frame ();
-		frame->page = NULL;
 		return frame;
 	}
 
@@ -274,7 +277,7 @@ vm_do_claim_page (struct page *page) {
 void
 supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
 	/* project3 Memory Management */
-	hash_init (&spt->hash_table, page_hash, page_less, NULL);
+	hash_init (&spt->hash_table, hash_func, hash_less, NULL);
 	/* -------------------------- */
 }
 
@@ -282,31 +285,76 @@ supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
 bool
 supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 		struct supplemental_page_table *src UNUSED) {
-			/* project3 Swap In/Out */
-			struct thread *curr=thread_current();
-			struct hash_iterator h_i;
-			struct hash *parent = &src->hash_table;
-			hash_first(&h_i,parent);
-			while(hash_next(&h_i)){
-				struct page *parent_page=hash_entry(hash_cur(&h_i),struct page,hash_elem);
-				if(parent_page->operations->type==VM_UNINIT){
-					vm_initializer *init=parent_page->uninit.init;
-					void *aux=parent_page->uninit.aux;
-					vm_alloc_page_with_initializer(parent_page->uninit.type,parent_page->va,parent_page->writable,init,aux);
-				} else {
-					struct page *child_page=(struct page*)malloc(sizeof(struct page));
-					memcpy(child_page,parent_page,sizeof(struct page));
-					if(!spt_insert_page(dst,child_page)){
-						return false;
-					}
-					if(!pml4_set_page(curr->pml4,child_page->va,child_page->frame->kva,false)){
-						return false;
-					}
-				}
-			}
+	/* project3 Swap In/Out */
+	// struct thread *curr=thread_current();
+	// struct hash_iterator h_i;
+	// struct hash *parent = &src->hash_table;
+	// hash_first(&h_i,parent);
+	// while(hash_next(&h_i)){
+	// 	struct page *parent_page=hash_entry(hash_cur(&h_i),struct page,hash_elem);
+	// 	if(parent_page->operations->type==VM_UNINIT){
+	// 		vm_initializer *init=parent_page->uninit.init;
+	// 		void *aux=parent_page->uninit.aux;
+	// 		vm_alloc_page_with_initializer(parent_page->uninit.type,parent_page->va,parent_page->writable,init,aux);
+	// 	} else {
+	// 		struct page *child_page=(struct page*)malloc(sizeof(struct page));
+	// 		memcpy(child_page,parent_page,sizeof(struct page));
+	// 		if(!spt_insert_page(dst,child_page)){
+	// 			return false;
+	// 		}
+	// 		if(!pml4_set_page(curr->pml4,child_page->va,child_page->frame->kva,false)){
+	// 			return false;
+	// 		}
+	// 	}
+	// }
 
-			return true;
-			/* --------------------- */
+	// struct thread *curr = thread_current();
+	// struct hash *parent_table = &src->hash_table;
+	// struct hash_iterator i;
+
+	// hash_first (&i, parent_table);
+	// while (hash_next(&i)){
+	// 	struct page *parent_page = hash_entry(hash_cur(&i), struct page, hash_elem);
+		
+	// 	if (parent_page->operations->type == VM_UNINIT){
+	// 		vm_initializer *init = parent_page->uninit.init;
+	// 		void *aux = parent_page->uninit.aux;
+	// 		vm_alloc_page_with_initializer(parent_page->uninit.type, parent_page->va, parent_page->writable, init, aux);
+	// 		// printf("c\n");
+	// 	}
+	// }
+
+	// hash_first (&i, parent_table);
+	// while (hash_next(&i)){
+	// 	struct page *parent_page = hash_entry(hash_cur(&i), struct page, hash_elem);
+		
+	// 	if (parent_page->operations->type == VM_ANON){
+	// 		struct page *child_page = (struct page *) malloc (sizeof (struct page));
+	// 		child_page->operations = parent_page->operations;
+	// 		child_page->va = parent_page->va;
+	// 		child_page->writable = parent_page->writable;
+	// 		child_page->frame = NULL;
+	// 		child_page->anon.swap_slot = parent_page->anon.swap_slot;
+
+	// 		vm_claim_page(child_page->va);
+			
+	// 		if (!spt_insert_page(dst, child_page)){
+	// 			return false;
+	// 		}
+	// 		// printf("a\n");
+	// 	}
+	// 	else if (parent_page->operations->type == VM_FILE){
+	// 		struct page *child_page = (struct page *) malloc (sizeof (struct page));
+	// 		child_page->operations = parent_page->operations;
+	// 		child_page->va = parent_page->va;
+	// 		child_page->writable = parent_page->writable;
+	// 		child_page->frame = NULL;
+	// 		memcpy(&child_page->file, &parent_page->file, sizeof(struct file_page));
+			
+
+
+	return true;
+	/* --------------------- */
 }
 /* project3 Memory Mapped Files: Munmap */
 void spt_destructor(struct hash_elem *e){
@@ -319,27 +367,28 @@ void
 supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
-	 struct hash_iterator h_i;
-	 hash_first(&h_i,&spt->hash_table);
-	 while(hash_next(&h_i)){
-		struct page *page=hash_entry(hash_cur(&h_i),struct page,hash_elem);
-		if(page->operations->type==VM_FILE){
-			/* project3 Swap In/Out */
-			munmap(page->va);
-			/* --------------------- */
-		}
-	 }
-	 hash_destroy(&spt->hash_table,spt_destructor);
+
+
+	struct thread *curr = thread_current();
+	struct list_elem *temp_elem = list_begin(&curr->mmap_list);
+
+	for (; temp_elem != list_tail(&curr->mmap_list); ){
+		struct mmap_file *temp_mmap = list_entry(temp_elem, struct mmap_file, elem);
+		temp_elem = temp_elem->next;
+		munmap(temp_mmap->addr);
+	}
+
+	hash_destroy(&spt->hash_table,spt_destructor);
 }
 /* ------------------------------------ */
 
 /* project3 Memory Management: additional function */
-unsigned page_hash (const struct hash_elem *p_, void *aux UNUSED) {
+unsigned hash_func (const struct hash_elem *p_, void *aux UNUSED) {
     const struct page *p = hash_entry(p_, struct page, hash_elem);
     return hash_bytes(&p->va, sizeof p->va);
 }
 
-bool page_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED) {
+bool hash_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED) {
     const struct page *a = hash_entry(a_, struct page, hash_elem);
     const struct page *b = hash_entry(b_, struct page, hash_elem);
 

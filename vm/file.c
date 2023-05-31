@@ -46,22 +46,18 @@ file_backed_swap_in (struct page *page, void *kva) {
 
 	/* project3 Swap In/Out */
 	if (page == NULL) return false;
-
-	struct container *aux = (struct container *)page->uninit.aux;
-
-	struct file *file = aux->file;
-	off_t ofs = aux->ofs;	
-	size_t page_read_bytes = aux->page_read_bytes;
-	size_t page_zero_bytes = PGSIZE - page_read_bytes;
-
-	file_seek (file, ofs);
-
-	if (file_read(file, kva, page_read_bytes) != (int) page_read_bytes){
-		// palloc_free_page(kva);
+	int file_size=file_read_at(file_page->file,kva,file_page->length,file_page->offset);
+	if(file_size!=file_page->length){
 		return false;
 	}
+	//struct container *aux = (struct container *)page->uninit.aux;
 
-	memset (kva + page_read_bytes, 0, page_zero_bytes);
+	//struct file *file = aux->file;
+	//off_t ofs = aux->ofs;	
+	//size_t page_read_bytes = aux->page_read_bytes;
+	//size_t page_zero_bytes = PGSIZE - page_read_bytes;
+
+	memset (kva + file_size, 0, PGSIZE-file_size);
 	return true;
 	/* -------------------- */
 }
@@ -74,13 +70,17 @@ file_backed_swap_out (struct page *page) {
 	/* project3 Swap In/Out */
 	if (page == NULL) return false;
 
-	struct container *aux = (struct container *)page->uninit.aux;
+	//struct container *aux = (struct container *)page->uninit.aux;
 
 	if(pml4_is_dirty(thread_current()->pml4,page->va)){
-		file_write_at(aux->file,page->va,aux->page_read_bytes,aux->ofs);
+		int file_size=file_write_at(file_page->file,page->frame->kva,file_page->length,file_page->offset);
+		if(file_size!=file_page->length){
+			return false;
+		}
 		pml4_set_dirty(thread_current()->pml4,page->va,0);
 	}
 	pml4_clear_page(thread_current()->pml4,page->va);
+	return true;
 	/* -------------------- */
 }
 
@@ -97,7 +97,11 @@ static bool lazy_load_mmap(struct page *page, void *aux)
 	struct file *file = container->file;
 	off_t ofs = container->ofs;
 	size_t page_read_bytes = container->page_read_bytes;
-	size_t page_zero_bytes = PGSIZE - page_read_bytes;
+	size_t page_first = PGSIZE - page_read_bytes;
+
+	page->file.file = file;
+	page->file.offset = ofs;
+	page->file.length = page_read_bytes;
 
 	file_seek (file, ofs);
 	
@@ -105,7 +109,7 @@ static bool lazy_load_mmap(struct page *page, void *aux)
 		palloc_free_page(page->frame->kva);
 		return false;
 	}
-	memset(page->frame->kva + page_read_bytes, 0, page_zero_bytes);
+	memset(page->frame->kva + page_read_bytes, 0, page_first);
 
 	return true;
 }
@@ -115,6 +119,17 @@ void *
 do_mmap (void *addr, size_t length, int writable,
 		struct file *file, off_t offset) {
 	/* project3 Memory Mapped Files: Mmap */
+	struct thread *curr = thread_current();
+
+	struct mmap_file *mmap_file = (struct mmap_file *)malloc(sizeof(struct mmap_file));
+	mmap_file->addr = addr;
+	list_init(&mmap_file->page_list);
+	list_push_back(&curr->mmap_list, &mmap_file->elem);
+
+	mmap_file->file = file_reopen(file);
+	if (mmap_file->file == NULL)
+		return NULL;
+
 	void * ori_addr = addr;
     size_t read_bytes = length > file_length(file) ? file_length(file) : length;
     size_t zero_bytes = PGSIZE - read_bytes % PGSIZE;
@@ -124,13 +139,20 @@ do_mmap (void *addr, size_t length, int writable,
 		size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
         struct container *container = (struct container*)malloc(sizeof(struct container));
-        container->file = file;
+        container->file = mmap_file->file;
         container->ofs = offset;
         container->page_read_bytes = page_read_bytes;
 
 		if (!vm_alloc_page_with_initializer (VM_FILE, addr, writable, lazy_load_mmap, container)) {
-			return NULL;
+			return false;
         }
+
+		struct page *page = spt_find_page(&curr->spt, ori_addr);
+		if (page == NULL)
+			return false;
+
+		list_push_back(&mmap_file->page_list, &page->mmap_elem);
+
 		read_bytes -= page_read_bytes;
 		zero_bytes -= page_zero_bytes;
 		addr       += PGSIZE;
@@ -141,21 +163,22 @@ do_mmap (void *addr, size_t length, int writable,
 }
 
 /* Do the munmap */
-void
-do_munmap (void *addr) {
-	/* project3 Memory Mapped Files: Munmap */
-	while(1){
+void do_munmap(void *addr)
+{
+	while(true){
 		struct page *page=spt_find_page(&thread_current()->spt,addr);
+
 		if(page==NULL){
 			break;
 		}
-		struct container *container=(struct container*) page->uninit.aux;
+
 		if(pml4_is_dirty(thread_current()->pml4,page->va)){
-			file_write_at(container->file,addr,container->page_read_bytes,container->ofs);
+			file_write_at(page->file.file,addr,page->file.length,page->file.offset);
 			pml4_set_dirty(thread_current()->pml4,page->va,0);
 		}
+
 		pml4_clear_page(thread_current()->pml4,page->va);
+		
 		addr+=PGSIZE;
 	}
-	/* ------------- */
 }

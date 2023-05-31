@@ -78,8 +78,9 @@ void syscall_handler(struct intr_frame *f UNUSED)
 		/* project3 Anonymous Page: check buffer */
 		check_address(f->R.rdi);
 		/* ------------------------------------- */
-		if (exec(f->R.rdi) == -1)
+		if (exec(f->R.rdi) == -1){
 			exit(-1);
+		}
 		// exec(f->R.rdi);
 		break;
 	case SYS_WAIT:
@@ -145,7 +146,9 @@ void syscall_handler(struct intr_frame *f UNUSED)
 /* project3 Anonymous Page: check buffer */
 
 struct page * check_address(void *addr){
-	if(is_kernel_vaddr(addr)||addr==NULL) exit(-1);
+	if(is_kernel_vaddr(addr) || addr == NULL) {
+		exit(-1);
+	}
 	
 	return spt_find_page(&thread_current()->spt, addr);
 }
@@ -153,13 +156,21 @@ struct page * check_address(void *addr){
 void check_valid_buffer(void* buffer, unsigned size, void* rsp, bool to_write){
 	struct page* page;
 
-	if(buffer <= USER_STACK && buffer >= rsp) return;
+	if(buffer <= USER_STACK && buffer >= rsp) {
+		return;
+	}
 
 	for(int i=0; i<size; i++){
 		page = check_address(buffer+i);
-		if(page == NULL) exit(-1);
+		if(page == NULL) {
+			// printf("\naaaaaa\n\n");
+			exit(-1);
+		}
 		// if(to_write && !page->writable) exit(-1);
-		if(to_write == true && page->writable == false) exit(-1);
+		if(to_write == true && page->writable == false) {
+			// printf("\nbbbbbbbb\n\n");
+			exit(-1);
+		}
 	}
 }
 /* ------------------------------------- */
@@ -185,11 +196,12 @@ int fork(const char *thread_name, struct intr_frame *f)
 int exec(char *file_name)
 {
 	// check_address(file_name);
-
 	char *fn_copy = palloc_get_page(PAL_ZERO);
 	tid_t tid;
-	if (fn_copy == NULL)
+	if (fn_copy == NULL){
+		// printf("here\n");
 		exit(-1);
+	}
 	strlcpy(fn_copy, file_name, strlen(file_name) + 1);
 	if ((tid = process_exec(fn_copy)) == -1)
 		return 0;
@@ -271,6 +283,7 @@ int open(const char *file)
 	}
 	cur->fd_idx = fd_idx;
 	cur->file_list[fd_idx] = file_obj;
+	
 	return fd_idx;
 }
 
@@ -306,8 +319,9 @@ int read(int fd, void *buffer, unsigned size)
 		struct thread *curr = thread_current();
 		if (fd < 0)
 			return -1;
-		if (curr->file_list[fd] == NULL)
+		if (curr->file_list[fd] == NULL){
 			return -1;
+		}
 		lock_acquire(&file_lock);
 		read_out = file_read(curr->file_list[fd], buffer, size);
 		lock_release(&file_lock);
@@ -387,16 +401,16 @@ void close(int fd)
 /* project3 Memory Mapped Files: Mmap & Munmap */
 void *mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
 
-    if (offset % PGSIZE != 0) {
+    if (offset % PGSIZE) {
         return NULL;
     }
 
-    if (pg_round_down(addr) != addr || is_kernel_vaddr(addr) || addr == NULL || (long long)length <= 0)
+    if (pg_ofs(addr) || is_kernel_vaddr(addr) || addr == NULL || (long long)length <= 0)
         return NULL;
     
-    if (fd == 0 || fd == 1)
-        exit(-1);
-    
+    if (fd == 0 || fd == 1){
+        return NULL;
+	}
     // vm_overlap
     if (spt_find_page(&thread_current()->spt, addr))
         return NULL;

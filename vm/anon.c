@@ -13,7 +13,6 @@ static struct disk *swap_disk;
 /* project3 Anonymous Page */
 struct bitmap *swap_table;
 /* ----------------------- */
-#define SECTORS_IN_PAGE PGSIZE/DISK_SECTOR_SIZE
 static bool anon_swap_in (struct page *page, void *kva);
 static bool anon_swap_out (struct page *page);
 static void anon_destroy (struct page *page);
@@ -55,16 +54,17 @@ anon_initializer (struct page *page, enum vm_type type, void *kva) {
 static bool
 anon_swap_in (struct page *page, void *kva) {
 	struct anon_page *anon_page = &page->anon;
+	int n_sector=PGSIZE/DISK_SECTOR_SIZE;
 	/* project3 Swap In/Out */
-	int page_n = anon_page->swap_slot;
-	if(!bitmap_test(swap_table,page_n)){
+	int page_swap = anon_page->swap_slot;
+	if(!bitmap_test(swap_table,page_swap)){
 		return false;
 	}
-	for (int i=0;i<SECTORS_IN_PAGE;i++){
-		disk_read(swap_disk,(page_n*SECTORS_IN_PAGE)+i,kva+(DISK_SECTOR_SIZE*i));
+	for (int i=0;i<n_sector;i++){
+		disk_read(swap_disk,(page_swap*n_sector)+i,kva+(DISK_SECTOR_SIZE*i));
 	}
 	// bitmap_flip(swap_table,page_n);
-	bitmap_set(swap_table,page_n,false);
+	bitmap_set(swap_table,page_swap,false);
 
 	return true;
 	/* -------------------- */
@@ -74,18 +74,19 @@ anon_swap_in (struct page *page, void *kva) {
 static bool
 anon_swap_out (struct page *page) {
 	struct anon_page *anon_page = &page->anon;
+	int n_sector=PGSIZE/DISK_SECTOR_SIZE;
 	/* project3 Swap In/Out */
-	int page_n=bitmap_scan(swap_table,0,1,false);
-	if(page_n==BITMAP_ERROR){
+	int page_swap=bitmap_scan(swap_table,0,1,false);
+	if(page_swap==BITMAP_ERROR){
 		return false;
 	}
-	for (int i=0;i<SECTORS_IN_PAGE;i++){
-		disk_write(swap_disk,(page_n*SECTORS_IN_PAGE)+i,page->va+(DISK_SECTOR_SIZE*i));
+	for (int i=0;i<n_sector;i++){
+		disk_write(swap_disk,(page_swap*n_sector)+i,page->va+(DISK_SECTOR_SIZE*i));
 	}
 	// bitmap_flip(swap_table,page_n);
-	bitmap_set(swap_table,page_n,true);
+	bitmap_set(swap_table,page_swap,true);
 	pml4_clear_page(thread_current()->pml4,page->va);
-	anon_page->swap_slot=page_n;
+	anon_page->swap_slot=page_swap;
 	return true;
 	/* -------------------- */
 }

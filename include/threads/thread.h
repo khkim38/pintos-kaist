@@ -158,7 +158,9 @@ struct thread
 	/* todo: for project3, must delete *pml4 */
 	// uint64_t *pml4;
 	/* ------------------------------- */
-
+	/* project3 */
+	struct list mmap_list;
+	/* -------- */
 	struct intr_frame tf; /* Information for switching */
 	unsigned magic;		  /* Detects stack overflow. */
 };
