@@ -145,7 +145,7 @@ void syscall_handler(struct intr_frame *f UNUSED)
 /* project3 Anonymous Page: check buffer */
 
 struct page * check_address(void *addr){
-	if(is_kernel_vaddr(addr)) exit(-1);
+	if(is_kernel_vaddr(addr)||addr==NULL) exit(-1);
 	
 	return spt_find_page(&thread_current()->spt, addr);
 }
